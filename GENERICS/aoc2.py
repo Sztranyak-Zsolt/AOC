@@ -12,6 +12,11 @@ def aoc_solve_puzzle(p_year: int, p_day: int, p_solution_func: solution_func):
         mkdir('input')
     input_file_name = f'input/input_{p_year}{p_day:02}.txt'
     if not path.isfile(input_file_name):
+        try:
+            aocd_input = aocd.get_data(year=p_year, day=p_day)
+        except:
+            print(f"Can't download AOC input, you can add it manually into {input_file_name}.")
+            raise
         with open(input_file_name, mode='w') as f:
             f.write(aocd.get_data(year=p_year, day=p_day))
     start_time = time.perf_counter()
