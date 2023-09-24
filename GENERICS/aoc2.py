@@ -18,7 +18,7 @@ def aoc_solve_puzzle(p_year: int, p_day: int, p_solution_func: solution_func):
             print(f"Can't download AOC input, you can add it manually into {input_file_name}.")
             raise
         with open(input_file_name, mode='w') as f:
-            f.write(aocd.get_data(year=p_year, day=p_day))
+            f.write(aocd_input)
     start_time = time.perf_counter()
     solution1, solution2 = p_solution_func(input_file_name)
     finish_time = time.perf_counter()

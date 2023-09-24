@@ -1,0 +1,5 @@
+Magic_Missile MM  53 0 4 0 0   0
+Drain         DR  73 0 2 2 0   0
+Shield        SH 113 6 0 0 7   0
+Poison        PO 173 6 3 0 0   0
+Recharge      RC 229 5 0 0 0 101

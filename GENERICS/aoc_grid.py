@@ -26,6 +26,38 @@ def add_positions(*args: tuple[int, ...]):
     return tuple(r_l)
 
 
+def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] = (0, 0),
+                       p_return_near: bool = True,
+                       p_return_corner: bool = False,
+                       p_return_self: bool = False) -> tuple[int, int] | tuple[int, int, int]:
+
+    for x in [1, 0, -1]:
+        for y in [1, 0, -1]:
+            if len(p_position) == 2:
+                if x == y == 0:
+                    if p_return_self:
+                        yield p_position
+                    continue
+                if 0 in [x, y]:
+                    if p_return_near:
+                        yield p_position[0] + x, p_position[1] + y
+                    continue
+                if p_return_near:
+                    yield p_position[0] + x, p_position[1] + y
+                continue
+            for z in [1, 0, -1]:
+                if x == y == z == 0:
+                    if p_return_self:
+                        yield p_position
+                    continue
+                if x == y == 0 or x == z == 0 or y == z == 0:
+                    if p_return_corner:
+                        yield p_position[0] + x, p_position[1] + y, p_position[2] + z
+                    continue
+                if p_return_near:
+                    yield p_position[0] + x, p_position[1] + y, p_position[2] + z
+
+
 def mh_distance(p_position1: tuple[int, ...],
                 p_position2: tuple[int, ...]) -> int:
     """
@@ -43,33 +75,26 @@ def mh_distance(p_position1: tuple[int, ...],
 class CGridBase:
     def __init__(self):
         self.position_dict: dict[tuple[int, int]] = {}
-
-    @property
-    def min_x(self):
-        if self.position_dict == {}:
-            return 0
-        return min([x for x, y in self.position_dict.keys()])
-
-    @property
-    def max_x(self):
-        if self.position_dict == {}:
-            return 0
-        return max([x for x, y in self.position_dict.keys()])
-
-    @property
-    def min_y(self):
-        if self.position_dict == {}:
-            return 0
-        return min([y for x, y in self.position_dict.keys()])
-
-    @property
-    def max_y(self):
-        if self.position_dict == {}:
-            return 0
-        return max([y for x, y in self.position_dict.keys()])
+        self.min_x = self.min_y = self.max_x = self.max_y = 0
 
     def add_item(self, p_position: tuple[int, int], p_item: CBaseItem):
         self.position_dict[p_position] = p_item
+        self.min_x = min(self.min_x, p_position[0])
+        self.max_x = max(self.max_x, p_position[0])
+        self.min_y = min(self.min_y, p_position[1])
+        self.max_y = max(self.max_y, p_position[1])
+
+    def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '', p_item_class: type[CBaseItem] = CBaseItem):
+        if p_row_number is None:
+            if len(self.position_dict) == 0:
+                p_row_number = 0
+            else:
+                p_row_number = self.max_y + 1
+        for x, p_item_value in enumerate(p_row):
+            if p_item_value not in p_chars_to_skip:
+                self.add_item((x, p_row_number), p_item_class(p_item_value))
+        self.max_y = p_row_number
+        self.max_x = max(self.max_x, len(p_row) - 1)
 
     def __str__(self):
         ret_lst = list()
