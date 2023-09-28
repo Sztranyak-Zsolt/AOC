@@ -1,15 +1,11 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+from GENERICS.aoc_grid import CGridBase
 
 
-class CGridItem:
-    def __init__(self, p_value: bool | int):
-        self.value = p_value
-
-
-class CGrid:
+class CGrid(CGridBase):
     def __init__(self, p_advanced_grid: bool = False):
+        super().__init__()
         self.advanced_grid = p_advanced_grid
-        self.position_dict: dict[tuple[int, int], bool | int] = {}
 
     def switch_on(self, p_position):
         if not self.advanced_grid:

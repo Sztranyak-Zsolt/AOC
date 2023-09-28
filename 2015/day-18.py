@@ -1,6 +1,5 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_item import CBaseItem
 from GENERICS.aoc_grid import CGridBase, neighbor_positions
 
 
@@ -11,7 +10,7 @@ class CGrid(CGridBase):
     def set_corners_on(self):
         for corner in [(0, 0), (0, 99), (99, 0), (99, 99)]:
             if corner not in self.position_dict:
-                self.add_item(corner, CBaseItem('#'))
+                self.add_item(corner, '#')
 
     def count_lights_on(self):
         return len(self.position_dict)
@@ -29,10 +28,10 @@ class CGrid(CGridBase):
             for y in range(self.min_y, self.max_y + 1):
                 neighbor_count = self.calc_neighbor_on((x, y))
                 if (x, y) in self.position_dict and neighbor_count in [2, 3]:
-                    new_grid.add_item((x, y), CBaseItem("#"))
+                    new_grid.add_item((x, y), "#")
                     continue
                 if (x, y) not in self.position_dict and neighbor_count == 3:
-                    new_grid.add_item((x, y), CBaseItem("#"))
+                    new_grid.add_item((x, y), "#")
                     continue
         new_grid.max_x = new_grid.max_y = 99
         return new_grid
@@ -41,10 +40,9 @@ class CGrid(CGridBase):
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     act_grid = CGrid()
     act_grid2 = CGrid()
-    # input_single_row = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
     for inp_row in list(yield_input_data(p_input_file_path, p_whole_row=True))[::-1]:
-        act_grid.add_row(p_row=inp_row, p_chars_to_skip='.')
-        act_grid2.add_row(p_row=inp_row, p_chars_to_skip='.')
+        act_grid.add_row(p_row=inp_row, p_chars_to_skip='.', p_item_type=str)
+        act_grid2.add_row(p_row=inp_row, p_chars_to_skip='.', p_item_type=str)
 
     act_grid2.set_corners_on()
     for _ in range(100):

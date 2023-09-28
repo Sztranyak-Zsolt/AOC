@@ -74,17 +74,20 @@ def mh_distance(p_position1: tuple[int, ...],
 
 class CGridBase:
     def __init__(self):
-        self.position_dict: dict[tuple[int, int]] = {}
+        self.position_dict: dict[tuple[int, int], CBaseItem | str | bool | int] = {}
         self.min_x = self.min_y = self.max_x = self.max_y = 0
+        self.double_on_print = False
+        self.print_y_reverse = False
 
-    def add_item(self, p_position: tuple[int, int], p_item: CBaseItem):
+    def add_item(self, p_position: tuple[int, int], p_item: CBaseItem | str | bool):
         self.position_dict[p_position] = p_item
         self.min_x = min(self.min_x, p_position[0])
         self.max_x = max(self.max_x, p_position[0])
         self.min_y = min(self.min_y, p_position[1])
         self.max_y = max(self.max_y, p_position[1])
 
-    def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '', p_item_class: type[CBaseItem] = CBaseItem):
+    def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
+                p_item_type: type[CBaseItem] | type[str] = CBaseItem):
         if p_row_number is None:
             if len(self.position_dict) == 0:
                 p_row_number = 0
@@ -92,19 +95,24 @@ class CGridBase:
                 p_row_number = self.max_y + 1
         for x, p_item_value in enumerate(p_row):
             if p_item_value not in p_chars_to_skip:
-                self.add_item((x, p_row_number), p_item_class(p_item_value))
+                if type(p_item_type) == str:
+                    self.add_item((x, p_row_number), p_item_value)
+                else:
+                    self.add_item((x, p_row_number), p_item_type(p_item_value))
         self.max_y = p_row_number
         self.max_x = max(self.max_x, len(p_row) - 1)
 
     def __str__(self):
         ret_lst = list()
-        for y in range(self.max_y, self.min_y - 1, -1):
+        c_length = 2 if self.double_on_print else 1
+        yr = slice(None) if not self.print_y_reverse else slice(None, None, -1)
+        for y in range(self.max_y, self.min_y - 1, -1)[yr]:
             act_row = ''
             for x in range(self.min_x, self.max_x + 1):
                 if (x, y) in self.position_dict:
-                    act_row += f"{self.position_dict[(x, y)]}@"[0]
+                    act_row += f"{self.position_dict[(x, y)]}@"[0] * c_length
                 else:
-                    act_row += ' '
+                    act_row += ' ' * c_length
             ret_lst.append(act_row)
         return '\n'.join(ret_lst)
 
