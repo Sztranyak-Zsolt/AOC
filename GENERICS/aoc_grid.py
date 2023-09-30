@@ -42,7 +42,7 @@ def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] = (0, 
                     if p_return_near:
                         yield p_position[0] + x, p_position[1] + y
                     continue
-                if p_return_near:
+                if p_return_corner:
                     yield p_position[0] + x, p_position[1] + y
                 continue
             for z in [1, 0, -1]:
