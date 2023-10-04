@@ -1,10 +1,14 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+from collections import namedtuple
+
+
+TInstruction = namedtuple('TInstruction', ['func', 'param_list'])
 
 
 class CCalculation:
     def __init__(self):
         self.vars = {"a": 0, "b": 0, "c": 0, "d": 0}
-        self.instr_list = list()
+        self.instr_list: list[TInstruction] = list()
 
     def reset_vars(self):
         self.vars = {"a": 0, "b": 0, "c": 0, "d": 0}
@@ -34,13 +38,14 @@ class CCalculation:
         return 1
 
     def add_instruction(self, p_instruction_row: list[int | str]):
-        self.instr_list.append([eval(f"self.{p_instruction_row[0]}"), p_instruction_row[1:]])
+        new_instruction = TInstruction(eval(f"self.{p_instruction_row[0]}"), p_instruction_row[1:])
+        self.instr_list.append(new_instruction)
 
     def calculate(self):
         act_index = 0
         while True:
             try:
-                act_index += self.instr_list[act_index][0](*self.instr_list[act_index][1])
+                act_index += self.instr_list[act_index].func(*self.instr_list[act_index].param_list)
             except IndexError:
                 break
 
@@ -49,7 +54,6 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     c = CCalculation()
     for inp_row in yield_input_data(p_input_file_path):
         c.add_instruction(inp_row)
-
     c.calculate()
     answer1 = c.vars['a']
 
