@@ -40,7 +40,7 @@ class CGrid(CGridBase):
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     act_grid = CGrid()
     act_grid2 = CGrid()
-    for inp_row in list(yield_input_data(p_input_file_path, p_whole_row=True))[::-1]:
+    for inp_row in list(yield_input_data(p_input_file_path, p_whole_row=True, p_reversed=True)):
         act_grid.add_row(p_row=inp_row, p_chars_to_skip='.', p_item_type=str)
         act_grid2.add_row(p_row=inp_row, p_chars_to_skip='.', p_item_type=str)
 

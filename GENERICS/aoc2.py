@@ -42,7 +42,8 @@ def yield_input_data(p_file_name: str,
                      p_only_nums: bool = False,
                      p_convert_to_num: bool = True,
                      p_chars_to_space: str = '',
-                     p_group_separator: str | None = None):
+                     p_group_separator: str | None = None,
+                     p_reversed: bool = False):
 
     def return_conv_item(p_item: str) -> int | str | None:
         if not p_convert_to_num:
@@ -52,7 +53,11 @@ def yield_input_data(p_file_name: str,
             return conv_item
 
     def yield_data_inner(p_raw_data_inner: str):
-        for p_raw_data_inner_line in p_raw_data_inner.split('\n'):
+        if p_reversed:
+            sl = slice(None, None, -1)
+        else:
+            sl = slice(None, None, 1)
+        for p_raw_data_inner_line in p_raw_data_inner.split('\n')[sl]:
             if p_whole_row:
                 yield return_conv_item(p_raw_data_inner_line)
             else:

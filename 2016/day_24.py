@@ -74,7 +74,7 @@ class CGrid(CGridBase):
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     g = CGrid()
-    for inp_row in yield_input_data(p_input_file_path, p_whole_row=True):
+    for inp_row in yield_input_data(p_input_file_path, p_whole_row=True, p_reversed=True):
         g.add_row(inp_row, p_chars_to_skip='.', p_item_type=str)
 
     answer1 = g.shortest_path_from_0

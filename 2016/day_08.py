@@ -42,7 +42,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
         else:
             s.rotate_column(inp_row[2], inp_row[4])
 
-    s.double_on_print = True
+    s.double_width_on_print = True
     s.print_y_reverse = True
     answer1 = len(s.position_dict)
     answer2 = f'\n{s}\n'
