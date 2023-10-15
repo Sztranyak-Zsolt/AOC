@@ -1,68 +1,72 @@
 from __future__ import annotations
 from GENERICS.aoc_item import CBaseItem
 from enum import Enum
-from collections import deque
+from collections import deque, namedtuple
 from typing import Self, Iterable
 
 
+Position2D = namedtuple('Position2D', ['x', 'y'])
+Position3D = namedtuple('Position3D', ['x', 'y', 'z'])
+
+
 class DIRS(Enum):
-    UP = (0, 1)
-    LEFT = (-1, 0)
-    DOWN = (0, -1)
-    RIGHT = (1, 0)
+    UP = Position2D(0, 1)
+    LEFT = Position2D(-1, 0)
+    DOWN = Position2D(0, -1)
+    RIGHT = Position2D(1, 0)
 
 
-def add_positions(*args: tuple[int, ...]):
+def add_positions(*args: tuple[int, ...] | Position2D | Position3D):
     """
     Function summarize each dimensions of the given positions and return the result as tuple.
     :param args: position list to be added
     :return: aggregated position, length is equal to the longest parameter length
     """
     d_arg_item_length = max([len(ti) for ti in args])
-    r_l = [0] * d_arg_item_length
+    r_l = [0] * max([len(ti) for ti in args])
     for p_item in args:
         for d_i in range(d_arg_item_length):
             try:
                 r_l[d_i] += p_item[d_i]
             except IndexError:
                 pass
+    if all(isinstance(x, Position2D) for x in args):
+        return Position2D(r_l[0], r_l[1])
+    if all(isinstance(x, Position3D) for x in args):
+        return Position3D(r_l[0], r_l[1], r_l[2])
     return tuple(r_l)
 
 
-def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] = (0, 0),
+def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] | Position2D | Position3D = (0, 0),
                        p_return_near: bool = True,
                        p_return_corner: bool = False,
-                       p_return_self: bool = False) -> Iterable[tuple[int, int] | tuple[int, int, int]]:
-
-    for x in [1, 0, -1]:
-        for y in [1, 0, -1]:
-            if len(p_position) == 2:
-                if x == y == 0:
-                    if p_return_self:
-                        yield p_position
-                    continue
-                if 0 in [x, y]:
-                    if p_return_near:
+                       p_return_self: bool = False) \
+        -> Iterable[tuple[int, int] | tuple[int, int, int] | Position2D | Position3D]:
+    def np_inner():
+        for x in [1, 0, -1]:
+            for y in [1, 0, -1]:
+                if len(p_position) == 2:
+                    if (p_return_self and x == y == 0
+                            or p_return_near and x + y in [1, -1]
+                            or p_return_corner and x != 0 and y != 0):
                         yield p_position[0] + x, p_position[1] + y
                     continue
-                if p_return_corner:
-                    yield p_position[0] + x, p_position[1] + y
-                continue
-            for z in [1, 0, -1]:
-                if x == y == z == 0:
-                    if p_return_self:
-                        yield p_position
-                    continue
-                if x == y == 0 or x == z == 0 or y == z == 0:
-                    if p_return_corner:
+                for z in [1, 0, -1]:
+                    if x == y == z == 0 and p_return_self \
+                            or [x, y, z].count(0) == 2 and p_return_corner \
+                            or [x, y, z].count(0) in [0, 1] and p_return_near:
                         yield p_position[0] + x, p_position[1] + y, p_position[2] + z
-                    continue
-                if p_return_near:
-                    yield p_position[0] + x, p_position[1] + y, p_position[2] + z
+    for np in np_inner():
+        if isinstance(p_position, Position2D):
+            yield Position2D(np[0], np[1])
+        elif isinstance(p_position, Position3D):
+            yield Position3D(np[0], np[1], np[2])
+        else:
+            yield np
 
 
-def mh_distance(p_position1: tuple[int, ...],
-                p_position2: tuple[int, ...]) -> int:
+def mh_distance(p_position1: tuple[int, ...] | Position2D | Position3D,
+                p_position2: tuple[int, ...] | Position2D | Position3D) -> int:
     """
     Return the manhattan distance of the positions.
     :param p_position1: base position
@@ -77,7 +81,7 @@ def mh_distance(p_position1: tuple[int, ...],
 
 class CGridBase:
     def __init__(self):
-        self.position_dict: dict[tuple[int, int], CBaseItem | str | bool | int] = {}
+        self.position_dict: dict[Position2D, CBaseItem | str | bool | int] = {}
         self.min_x = self.min_y = self.max_x = self.max_y = 0
         self.double_width_on_print = False
         self.print_y_reverse = False
@@ -85,12 +89,17 @@ class CGridBase:
         self.x_mirrored_grid: Self | None = None
         self.left_rotated_grid: Self | None = None
 
-    def add_item(self, p_position: tuple[int, int], p_item: CBaseItem | str | int | bool):
+    def add_item(self, p_position: Position2D, p_item: CBaseItem | str | int | bool,
+                 set_border_on_init: bool = False):
         self.position_dict[p_position] = p_item
-        self.min_x = min(self.min_x, p_position[0])
-        self.max_x = max(self.max_x, p_position[0])
-        self.min_y = min(self.min_y, p_position[1])
-        self.max_y = max(self.max_y, p_position[1])
+        if len(self.position_dict) != 1 or not set_border_on_init:
+            self.min_x = min(self.min_x, p_position.x)
+            self.max_x = max(self.max_x, p_position.x)
+            self.min_y = min(self.min_y, p_position.y)
+            self.max_y = max(self.max_y, p_position.y)
+        else:
+            self.min_x = self.max_x = p_position.x
+            self.min_y = self.max_y = p_position.y
 
     def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
                 p_item_type: type[CBaseItem] | type[str] | type[int] = str):
@@ -102,9 +111,9 @@ class CGridBase:
         for x, p_item_value in enumerate(p_row):
             if p_item_value not in p_chars_to_skip:
                 if type(p_item_type) == str:
-                    self.add_item((x, p_row_number), p_item_value)
+                    self.add_item(Position2D(x, p_row_number), p_item_value)
                 else:
-                    self.add_item((x, p_row_number), p_item_type(p_item_value))
+                    self.add_item(Position2D(x, p_row_number), p_item_type(p_item_value))
         self.min_y = min(self.min_y, p_row_number)
         self.max_y = max(self.max_y, p_row_number)
         self.max_x = max(self.max_x, len(p_row) - 1)
@@ -121,8 +130,7 @@ class CGridBase:
             dq = deque([act_position])
             while dq:
                 ap = dq.popleft()
-                for nx, ny in neighbor_positions(ap):
-                    next_position = (nx, ny)
+                for next_position in neighbor_positions(ap):
                     if next_position in known_positions or next_position not in self.position_dict:
                         continue
                     known_positions.add(next_position)
@@ -142,16 +150,16 @@ class CGridBase:
     def create_or_refresh_mirror_y(self):
         self.y_mirrored_grid = mg = self.__class__()
         mg.min_x, mg.max_x, mg.min_y, mg.max_y = self.min_x, self.max_x, self.min_y, self.max_y
-        for (px, py), pv in self.position_dict.items():
-            mg.add_item((self.min_x + self.max_x - px, py), pv)
+        for p_position, pv in self.position_dict.items():
+            mg.add_item(Position2D(self.min_x + self.max_x - p_position.x, p_position.y), pv)
         self.y_mirrored_grid.y_mirrored_grid = self
         return self.y_mirrored_grid
 
     def create_or_refresh_mirror_x(self):
         self.x_mirrored_grid = mg = self.__class__()
         mg.min_x, mg.max_x, mg.min_y, mg.max_y = self.min_x, self.max_x, self.min_y, self.max_y
-        for (px, py), pv in self.position_dict.items():
-            mg.add_item((px, self.min_y + self.max_y - py), pv)
+        for p_position, pv in self.position_dict.items():
+            mg.add_item(Position2D(p_position.x, self.min_y + self.max_y - p_position.y), pv)
         self.x_mirrored_grid.x_mirrored_grid = self
         return self.x_mirrored_grid
 
@@ -164,8 +172,9 @@ class CGridBase:
         self.left_rotated_grid = mg = self.__class__()
         mg.min_x, mg.max_x = self.min_x, self.min_x + self.max_y - self.min_y
         mg.min_y, mg.max_y = self.min_y, self.min_y + self.max_x - self.min_x
-        for (px, py), pv in self.position_dict.items():
-            mg.add_item((self.min_x + (py - self.min_y), self.min_y + (self.max_x - px)), pv)
+        for p_position, pv in self.position_dict.items():
+            mg.add_item(Position2D(self.min_x + (p_position.y - self.min_y),
+                                   self.min_y + (self.max_x - p_position.x)), pv)
         return self.left_rotated_grid
 
     def set_rotations(self):
@@ -205,41 +214,56 @@ class CGridBase:
         if self.min_x != other.min_x or self.max_x != other.max_x \
                 or self.min_y != other.min_y or self.max_y != other.max_y:
             return False
-        for (sx, sy), sv in self.position_dict.items():
-            if (sx, sy) not in other.position_dict or other.position_dict[(sx, sy)] != sv:
+        for s_position, sv in self.position_dict.items():
+            if s_position not in other.position_dict or other.position_dict[s_position] != sv:
                 return False
         if ['x' for k in other.position_dict if k not in self.position_dict]:
             return False
         return True
 
-    def get_subgrid(self, p_pos1: tuple[int, int], p_pos2: tuple[int, int]) -> Self:
+    def get_subgrid(self, p_pos1: Position2D, p_pos2: Position2D, p_keep_min_positions: bool = False) -> Self:
         part_grid = self.__class__()
-        min_x, max_x, min_y, max_y = min(p_pos1[0], p_pos2[0]), max(p_pos1[0], p_pos2[0]), \
-            min(p_pos1[1], p_pos2[1]), max(p_pos1[1], p_pos2[1])
-        part_grid.max_x = max_x - min_x
-        part_grid.max_y = max_y - min_y
+        min_x, max_x = min(p_pos1.x, p_pos2.x), max(p_pos1.x, p_pos2.x)
+        min_y, max_y = min(p_pos1.y, p_pos2.y), max(p_pos1.y, p_pos2.y)
+        if p_keep_min_positions:
+            part_grid.min_x = min_x
+            part_grid.min_y = min_y
+        part_grid.max_x = part_grid.min_x + max_x - min_x
+        part_grid.max_y = part_grid.min_y + max_y - min_y
         for pos_y in range(min_y, max_y + 1):
             for pos_x in range(min_x, max_x + 1):
                 if (pos_x, pos_y) in self.position_dict:
-                    part_grid.add_item((pos_x - min_x, pos_y - min_y), self.position_dict[(pos_x, pos_y)])
+                    part_grid.add_item(Position2D(part_grid.min_x + pos_x - min_x, part_grid.min_y + pos_y - min_y),
+                                       self.position_dict[(pos_x, pos_y)])
         return part_grid
 
-    def add_subgrid(self, p_add_position_bottom_left: tuple[int, int], p_subgrid: Self):
+    def add_subgrid(self, p_add_position_bottom_left: Position2D, p_subgrid: Self):
         x_length = p_subgrid.max_x - p_subgrid.min_x
         y_length = p_subgrid.max_y - p_subgrid.min_y
 
         for sg_pos_y in range(p_subgrid.min_y, p_subgrid.max_y + 1):
             for sg_pos_x in range(p_subgrid.min_x, p_subgrid.max_x + 1):
                 if (sg_pos_x, sg_pos_y) in p_subgrid.position_dict:
-                    self.position_dict[(p_add_position_bottom_left[0] + sg_pos_x,
-                                        p_add_position_bottom_left[1] + sg_pos_y)] = \
-                        p_subgrid.position_dict[(sg_pos_x, sg_pos_y)]
-                elif (p_add_position_bottom_left[0] + sg_pos_x,
-                      p_add_position_bottom_left[1] + sg_pos_y) in self.position_dict:
-                    del self.position_dict[(p_add_position_bottom_left[0] + sg_pos_x,
-                                            p_add_position_bottom_left[1] + sg_pos_y)]
-        self.max_x = max(self.max_x, p_add_position_bottom_left[0] + x_length)
-        self.max_y = max(self.max_y, p_add_position_bottom_left[1] + y_length)
+                    self.position_dict[Position2D(p_add_position_bottom_left.x + sg_pos_x,
+                                                  p_add_position_bottom_left.y + sg_pos_y)] = \
+                        p_subgrid.position_dict[Position2D(sg_pos_x, sg_pos_y)]
+                elif (p_add_position_bottom_left.x + sg_pos_x,
+                      p_add_position_bottom_left.y + sg_pos_y) in self.position_dict:
+                    del self.position_dict[Position2D(p_add_position_bottom_left.x + sg_pos_x,
+                                                      p_add_position_bottom_left.y + sg_pos_y)]
+        self.max_x = max(self.max_x, p_add_position_bottom_left.x + x_length)
+        self.max_y = max(self.max_y, p_add_position_bottom_left.y + y_length)
+
+    def is_edge(self, p_position: Position2D) -> bool:
+        return p_position.x in [self.min_x, self.max_x] or p_position.y in [self.min_y, self.max_y]
+
+    def is_corner(self, p_position: Position2D) -> bool:
+        return p_position.x in [self.min_x, self.max_x] and p_position.y in [self.min_y, self.max_y]
+
+    def yield_all_position(self) -> Iterable[Position2D]:
+        for act_x in range(self.min_x, self.max_x + 1):
+            for act_y in range(self.min_y, self.max_y + 1):
+                yield Position2D(act_x, act_y)
 
     def __str__(self):
         ret_lst = list()

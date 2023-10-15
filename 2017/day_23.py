@@ -6,7 +6,8 @@ from sympy import isprime
 
 def prog_rewritten(p_debug_mode: bool, p_b: int):
     """
-    process counts prime numbers between 100000 + p_b * 100 and 117000 + p_b * 100 + 100000, checks every 17th numbers
+    Process counts prime numbers between 100000 + p_b * 100 and 117000 + p_b * 100 + 100000,
+    checking every 17th numbers.
     """
 
     mul_counter = 0

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions
+from GENERICS.aoc_grid import CGridBase, add_positions, Position2D
 
 
 class CGrid(CGridBase):
@@ -9,17 +9,17 @@ class CGrid(CGridBase):
 
     @property
     def starting_position(self) -> tuple[int, int]:
-        return [(x, y) for (x, y) in self.position_dict if y == self.max_y][0]
+        return [sp for sp in self.position_dict if sp.y == self.max_y][0]
 
     @property
     def route_information(self) -> tuple[str, int]:
-        poss_dirs = {(1, 0): [(1, 0), (0, 1), (0, -1)],
-                     (-1, 0): [(-1, 0), (0, 1), (0, -1)],
-                     (0, 1): [(0, 1), (1, 0), (-1, 0)],
-                     (0, -1): [(0, -1), (1, 0), (-1, 0)]}
+        poss_dirs = {Position2D(1, 0): [Position2D(1, 0), Position2D(0, 1), Position2D(0, -1)],
+                     Position2D(-1, 0): [Position2D(-1, 0), Position2D(0, 1), Position2D(0, -1)],
+                     Position2D(0, 1): [Position2D(0, 1), Position2D(1, 0), Position2D(-1, 0)],
+                     Position2D(0, -1): [Position2D(0, -1), Position2D(1, 0), Position2D(-1, 0)]}
         rv = ''
         step_counter = 1
-        act_direction = (-1, 0)
+        act_direction = Position2D(-1, 0)
         act_position = self.starting_position
         while True:
             for next_dir in poss_dirs[act_direction]:

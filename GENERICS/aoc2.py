@@ -59,11 +59,13 @@ def yield_input_data(p_file_name: str,
             sl = slice(None, None, 1)
         for p_raw_data_inner_line in p_raw_data_inner.split('\n')[sl]:
             if p_whole_row:
-                yield return_conv_item(p_raw_data_inner_line)
+                if (rci := return_conv_item(p_raw_data_inner_line)) is not None:
+                    yield rci
             else:
                 d_row_list = list()
                 for p_raw_item in p_raw_data_inner_line.split():
-                    d_row_list.append(return_conv_item(p_raw_item))
+                    if (rci := return_conv_item(p_raw_item)) is not None:
+                        d_row_list.append(rci)
                 yield d_row_list
 
     with open(p_file_name) as f:

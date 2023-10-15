@@ -1,20 +1,20 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, mh_distance, neighbor_positions
+from GENERICS.aoc_grid import CGridBase, add_positions, mh_distance, neighbor_positions, Position2D
 
 
 class CSpiral(CGridBase):
-    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    directions = [Position2D(0, 1), Position2D(1, 0), Position2D(0, -1), Position2D(-1, 0)]
 
     def __init__(self, p_advanced_spiral: bool = False):
         super().__init__()
         self.act_dir_index = 0
-        self.last_position: tuple[int, int] | None = None
+        self.last_position: Position2D | None = None
         self.advanced_spiral = p_advanced_spiral
 
     def add_spiral_item(self) -> int:
         if self.last_position is None:
-            self.position_dict[(0, 0)] = 1
-            self.last_position = (0, 0)
+            self.position_dict[Position2D(0, 0)] = 1
+            self.last_position = Position2D(0, 0)
             return 1
         next_dir_index = (self.act_dir_index + 1) % 4
         if add_positions(self.last_position, self.directions[next_dir_index]) not in self.position_dict:
@@ -26,9 +26,9 @@ class CSpiral(CGridBase):
             self.position_dict[next_position] = act_item_value + 1
             return act_item_value + 1
         next_item_value = 0
-        for np_x, np_y in neighbor_positions(next_position, True, True):
-            if (np_x, np_y) in self.position_dict:
-                next_item_value += self.position_dict[(np_x, np_y)]
+        for np in neighbor_positions(next_position, True, True):
+            if np in self.position_dict:
+                next_item_value += self.position_dict[np]
         self.last_position = next_position
         self.position_dict[next_position] = next_item_value
         return next_item_value
@@ -40,7 +40,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     s1 = CSpiral()
     while s1.add_spiral_item() <= input_num:
         pass
-    answer1 = mh_distance(s1.last_position, (0, 0)) - 1
+    answer1 = mh_distance(s1.last_position, Position2D(0, 0)) - 1
 
     s2 = CSpiral(True)
     while (answer2 := s2.add_spiral_item()) <= input_num:

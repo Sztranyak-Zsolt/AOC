@@ -1,5 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, neighbor_positions
+from GENERICS.aoc_grid import CGridBase, neighbor_positions, Position2D
 from functools import cached_property
 from collections import deque
 from itertools import permutations
@@ -8,10 +8,10 @@ from itertools import permutations
 class CGrid(CGridBase):
     def __init__(self):
         super().__init__()
-        self.distance_dict: dict[tuple[str, str], int] = {}
+        self.distance_dict: dict[Position2D, int] = {}
 
     @cached_property
-    def point_dict(self) -> dict[str, tuple[int, int]]:
+    def point_dict(self) -> dict[str, Position2D]:
         return {v: k for k, v in self.position_dict.items() if v != '#'}
 
     def calc_point_distances(self):
@@ -21,8 +21,7 @@ class CGrid(CGridBase):
             points_to_find = {k2 for k2 in self.point_dict if k2 > k}
             while dq and points_to_find:
                 act_position, act_step = dq.popleft()
-                for next_x, next_y in neighbor_positions(act_position):
-                    next_position = (next_x, next_y)
+                for next_position in neighbor_positions(act_position):
                     if next_position in known_positions:
                         continue
                     known_positions.add(next_position)

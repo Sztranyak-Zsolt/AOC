@@ -9,7 +9,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
 
     for i in range(2018):
         lh.move_right(input_num)
-        lh.act_item = lh.add_loop_item_to_right_by_key(i)
+        lh.act_item = lh.add_loop_item_to_right(i)
 
     answer1 = lh.act_item.right_node.value
 

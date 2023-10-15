@@ -1,6 +1,6 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_grid import CGridBase, Position2D
 
 
 class CPicture(CGridBase):
@@ -29,12 +29,12 @@ class CPicture(CGridBase):
         rp.map_list = self.map_list
         for y_factor in range((self.max_y + 1) // rate):
             for x_factor in range((self.max_x + 1) // rate):
-                act_part = self.get_subgrid((x_factor * rate, y_factor * rate),
-                                            (x_factor * rate + rate - 1, y_factor * rate + rate - 1))
+                act_part = self.get_subgrid(Position2D(x_factor * rate, y_factor * rate),
+                                            Position2D(x_factor * rate + rate - 1, y_factor * rate + rate - 1))
                 for (source_grid, target_grid) in self.map_list[rate]:
                     for mapping in source_grid.yield_all_orientations():
                         if act_part == mapping:
-                            rp.add_subgrid((x_factor * (rate + 1), y_factor * (rate + 1)), target_grid)
+                            rp.add_subgrid(Position2D(x_factor * (rate + 1), y_factor * (rate + 1)), target_grid)
                             break
                     else:
                         continue

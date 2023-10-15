@@ -1,13 +1,13 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions
+from GENERICS.aoc_grid import CGridBase, add_positions, Position2D
 
 
 class CVCarrier(CGridBase):
     def __init__(self):
         super().__init__()
-        self.vc_current_node = (0, 0)
-        self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        self.vc_current_node = Position2D(0, 0)
+        self.directions = [Position2D(0, 1), Position2D(1, 0), Position2D(0, -1), Position2D(-1, 0)]
         self.vc_dir_index = 0
 
     def vc_bust(self) -> bool:
@@ -50,14 +50,14 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     for inp_row in list(yield_input_data(p_input_file_path, p_whole_row=True, p_reversed=True)):
         vc.add_row(inp_row, p_chars_to_skip='.', p_item_type=str)
         vc2.add_row(inp_row, p_chars_to_skip='.', p_item_type=str)
-    vc.vc_current_node = (vc.max_x // 2, vc.max_y // 2)
-    vc2.vc_current_node = (vc2.max_x // 2, vc2.max_y // 2)
+    vc.vc_current_node = Position2D(vc.max_x // 2, vc.max_y // 2)
+    vc2.vc_current_node = Position2D(vc2.max_x // 2, vc2.max_y // 2)
 
-    for _ in range(10000):
+    for _ in range(10001):
         if vc.vc_bust():
             answer1 += 1
 
-    for _ in range(10000000):
+    for _ in range(10000001):
         if vc2.vc_bust2():
             answer2 += 1
 

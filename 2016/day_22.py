@@ -1,5 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, CBaseItem, neighbor_positions
+from GENERICS.aoc_grid import CGridBase, CBaseItem, neighbor_positions, Position2D
 from collections import deque
 
 
@@ -15,7 +15,7 @@ class CNode(CBaseItem):
 class CNodeManager(CGridBase):
     def __init__(self):
         super().__init__()
-        self.position_dict: dict[tuple[int, int], CNode] = {}
+        self.position_dict: dict[Position2D, CNode] = {}
 
     @property
     def viable_nodes_count(self) -> int:
@@ -27,24 +27,24 @@ class CNodeManager(CGridBase):
         return rv
 
     @property
-    def empty_node_position(self) -> tuple[int, int]:
+    def empty_node_position(self) -> Position2D:
         for k, v in self.position_dict.items():
             if v.used == 0:
                 return k
 
-    def step_to_target(self, p_starting_position: tuple[int, int], p_target_position: tuple[int, int]) -> int:
+    def step_to_target(self, p_starting_position: Position2D, p_target_position: Position2D) -> int:
         known_positions = {p_starting_position}
         dq = deque([[p_starting_position, 0]])
         while dq:
             act_position, act_step = dq.popleft()
-            for next_x, next_y in neighbor_positions(act_position):
-                if (next_x, next_y) not in known_positions:
-                    known_positions.add((next_x, next_y))
-                    if (next_x, next_y) == p_target_position:
+            for next_position in neighbor_positions(act_position):
+                if next_position not in known_positions:
+                    known_positions.add(next_position)
+                    if next_position == p_target_position:
                         return act_step + 1
                     try:
-                        if self.position_dict[(next_x, next_y)].used < 85:
-                            dq.append([(next_x, next_y), act_step + 1])
+                        if self.position_dict[next_position].used < 85:
+                            dq.append([next_position, act_step + 1])
                     except KeyError:
                         continue
         return -1
@@ -68,7 +68,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
         if inp_row[0][:4] in ('root', 'File'):
             continue
         _, x, y, size, used, avail, use_perc = inp_row
-        nm.add_item((x, y), CNode(f'x{x}y{y}', size, used, avail, use_perc))
+        nm.add_item(Position2D(x, y), CNode(f'x{x}y{y}', size, used, avail, use_perc))
 
     answer1 = nm.viable_nodes_count
     answer2 = nm.step_to_target(nm.empty_node_position, (nm.max_x, 0)) \

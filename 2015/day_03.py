@@ -1,5 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, DIRS
+from GENERICS.aoc_grid import CGridBase, add_positions, DIRS, Position2D
 
 
 class CGrid(CGridBase):
@@ -10,9 +10,9 @@ class CGrid(CGridBase):
 
     def __init__(self):
         super().__init__()
-        self.santa_position = (0, 0)
-        self.robot_position = (0, 0)
-        self.present_set = {(0, 0)}
+        self.santa_position = Position2D(0, 0)
+        self.robot_position = Position2D(0, 0)
+        self.present_set = {Position2D(0, 0)}
 
     def move_santa(self, p_direction: str):
         self.santa_position = add_positions(self.santa_position, self.directions[p_direction].value)

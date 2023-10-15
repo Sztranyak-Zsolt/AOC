@@ -1,21 +1,21 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from collections import deque
 from functools import cache
-from GENERICS.aoc_grid import neighbor_positions
+from GENERICS.aoc_grid import neighbor_positions, Position2D
 
 
 @cache
-def check_coordinate(p_position: tuple[int, int], p_secret_number: int) -> bool:
-    check_num = p_position[0] ** 2 + 3 * p_position[0] + 2 * p_position[0] * p_position[1] \
-                + p_position[1] + p_position[1] ** 2 + p_secret_number
+def check_coordinate(p_position: Position2D, p_secret_number: int) -> bool:
+    check_num = p_position.x ** 2 + 3 * p_position.x + 2 * p_position.x * p_position.y \
+                + p_position.y + p_position.y ** 2 + p_secret_number
     return str(bin(check_num)).count('1') % 2 == 0
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     answer1 = answer2 = None
     secret_number = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
-    starting_position = (1, 1)
-    target_position = (31, 39)
+    starting_position = Position2D(1, 1)
+    target_position = Position2D(31, 39)
     reachable_positions = {starting_position: 0}
     dq = deque([[starting_position, 0]])
 

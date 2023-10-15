@@ -1,6 +1,6 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, neighbor_positions
+from GENERICS.aoc_grid import CGridBase, neighbor_positions, Position2D
 
 
 class CGrid(CGridBase):
@@ -10,7 +10,7 @@ class CGrid(CGridBase):
     def set_corners_on(self):
         for corner in [(0, 0), (0, 99), (99, 0), (99, 99)]:
             if corner not in self.position_dict:
-                self.add_item(corner, '#')
+                self.add_item(Position2D(corner[0], corner[1]), '#')
 
     def count_lights_on(self):
         return len(self.position_dict)
@@ -28,11 +28,12 @@ class CGrid(CGridBase):
             for y in range(self.min_y, self.max_y + 1):
                 neighbor_count = self.calc_neighbor_on((x, y))
                 if (x, y) in self.position_dict and neighbor_count in [2, 3]:
-                    new_grid.add_item((x, y), "#")
+                    new_grid.add_item(Position2D(x, y), "#")
                     continue
                 if (x, y) not in self.position_dict and neighbor_count == 3:
-                    new_grid.add_item((x, y), "#")
+                    new_grid.add_item(Position2D(x, y), "#")
                     continue
+        new_grid.min_x = new_grid.min_y = 0
         new_grid.max_x = new_grid.max_y = 99
         return new_grid
 

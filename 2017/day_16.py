@@ -1,9 +1,14 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_loop import CLoopHandler
+from GENERICS.aoc_loop import CLoopHandlerWithKey
+
+
+class CLoopHandlerWithKey2(CLoopHandlerWithKey):
+    def __str__(self):
+        return ''.join([str(x) for x in self.get_list()])
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
-    lh = CLoopHandler()
+    lh = CLoopHandlerWithKey2()
     for d in 'abcdefghijklmnop':
         lh.add_loop_item_to_left_by_key(d)
     instruction_list = []
@@ -25,7 +30,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
         for instruction, parameters in instruction_list:
             instruction(*parameters)
 
-    answer1 = dance_cache[0]
+    answer1 = dance_cache[1]
     answer2 = dance_cache[1000000000 % len(dance_cache)]
 
     return answer1, answer2
