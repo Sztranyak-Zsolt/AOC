@@ -8,9 +8,9 @@ class CGrid(CGridBase):
         super().__init__()
 
     def set_corners_on(self):
-        for corner in [(0, 0), (0, 99), (99, 0), (99, 99)]:
+        for corner in [Position2D(0, 0), Position2D(0, 99), Position2D(99, 0), Position2D(99, 99)]:
             if corner not in self.position_dict:
-                self.add_item(Position2D(corner[0], corner[1]), '#')
+                self.add_item(corner, '#')
 
     def count_lights_on(self):
         return len(self.position_dict)

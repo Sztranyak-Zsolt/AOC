@@ -3,10 +3,10 @@ from GENERICS.aoc_item import CBaseItem
 from enum import Enum
 from collections import deque, namedtuple
 from typing import Self, Iterable
+from GENERICS.aoc_space import Position3D
 
 
 Position2D = namedtuple('Position2D', ['x', 'y'])
-Position3D = namedtuple('Position3D', ['x', 'y', 'z'])
 
 
 class DIRS(Enum):
@@ -33,6 +33,21 @@ def add_positions(*args: tuple[int, ...] | Position2D | Position3D):
     if all(isinstance(x, Position2D) for x in args):
         return Position2D(r_l[0], r_l[1])
     if all(isinstance(x, Position3D) for x in args):
+        return Position3D(r_l[0], r_l[1], r_l[2])
+    return tuple(r_l)
+
+
+def mul_position(p_position: tuple[int, ...] | Position2D | Position3D, p_multiplier: int) \
+        -> tuple[int, ...] | Position2D | Position3D:
+    """
+    Function multiply a position with an integer.
+    """
+    r_l = []
+    for p_pos_single in p_position:
+        r_l.append(p_pos_single * p_multiplier)
+    if isinstance(p_position, Position2D):
+        return Position2D(r_l[0], r_l[1])
+    if isinstance(p_position, Position3D):
         return Position3D(r_l[0], r_l[1], r_l[2])
     return tuple(r_l)
 
