@@ -1,5 +1,4 @@
 from __future__ import annotations
-from GENERICS.aoc_item import CBaseItem
 from enum import Enum
 from collections import deque, namedtuple
 from typing import Self, Iterable
@@ -52,7 +51,7 @@ def mul_position(p_position: tuple[int, ...] | Position2D | Position3D, p_multip
     return tuple(r_l)
 
 
-def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] | Position2D | Position3D = (0, 0),
+def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] | Position2D | Position3D = Position2D(0, 0),
                        p_return_near: bool = True,
                        p_return_corner: bool = False,
                        p_return_self: bool = False) \
@@ -96,7 +95,7 @@ def mh_distance(p_position1: tuple[int, ...] | Position2D | Position3D,
 
 class CGridBase:
     def __init__(self):
-        self.position_dict: dict[Position2D, CBaseItem | str | bool | int] = {}
+        self.position_dict: dict[Position2D, str | bool | int] = {}
         self.min_x = self.min_y = self.max_x = self.max_y = 0
         self.double_width_on_print = False
         self.print_y_reverse = False
@@ -104,7 +103,7 @@ class CGridBase:
         self.x_mirrored_grid: Self | None = None
         self.left_rotated_grid: Self | None = None
 
-    def add_item(self, p_position: Position2D, p_item: CBaseItem | str | int | bool,
+    def add_item(self, p_position: Position2D, p_item: str | int | bool,
                  set_border_on_init: bool = False):
         self.position_dict[p_position] = p_item
         if len(self.position_dict) != 1 or not set_border_on_init:
@@ -117,7 +116,7 @@ class CGridBase:
             self.min_y = self.max_y = p_position.y
 
     def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
-                p_item_type: type[CBaseItem] | type[str] | type[int] = str):
+                p_item_type: type[str] | type[int] = str):
         if p_row_number is None:
             if len(self.position_dict) == 0:
                 p_row_number = 0
@@ -293,6 +292,19 @@ class CGridBase:
                     act_row += ' ' * c_length
             ret_lst.append(act_row)
         return '\n'.join(ret_lst)
+
+    def __hash__(self):
+        return id(self)
+
+    def __copy__(self):
+        new_instance = self.__class__()
+        new_instance.position_dict = self.position_dict.copy()
+        new_instance.min_x = self.min_x
+        new_instance.max_x = self.max_x
+        new_instance.min_y = self.min_y
+        new_instance.max_y = self.max_y
+        new_instance.double_width_on_print = self.double_width_on_print
+        new_instance.print_y_reverse = self.print_y_reverse
 
 
 def main():

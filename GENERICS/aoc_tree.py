@@ -1,6 +1,6 @@
 from __future__ import annotations
 from functools import cached_property
-from typing import Self
+from typing import Self, Iterator
 
 
 class CTreeNode:
@@ -37,9 +37,19 @@ class CTreeNode:
         return self.value + sum([x.sum_values for x in self.child_list])
 
     @property
+    def count_all_children(self):
+        return len(self.child_list) + sum([x.count_all_children for x in self.child_list] + [0])
+
+    @property
     def is_value_balanced(self) -> bool:
         return len(set([x.sum_values for x in self.child_list])) <= 1
 
     def add_child(self, p_child: Self):
         self.child_list.append(p_child)
         p_child.parent_item = self
+
+    def yield_parents(self) -> Iterator[Self]:
+        act_parent = self.parent_item
+        while act_parent:
+            yield act_parent
+            act_parent = act_parent.parent_item

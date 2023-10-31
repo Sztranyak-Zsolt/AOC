@@ -1,9 +1,35 @@
 from __future__ import annotations
 from collections import namedtuple
 from math import gcd
+from typing import Self
 
 
 Position3D = namedtuple('Position3D', ['x', 'y', 'z'])
+
+
+class CSpaceBase:
+    def __init__(self):
+        self.position_dict: dict[Position3D, str | bool | int] = {}
+        self.min_x = self.min_y = self.min_z = self.max_x = self.max_y = self.max_z = 0
+        self.x_mirrored_space: Self | None = None
+        self.y_mirrored_space: Self | None = None
+        self.z_mirrored_space: Self | None = None
+        # self.left_rotated_space: Self | None = None
+
+    def add_item(self, p_position: Position3D, p_item: str | int | bool,
+                 set_border_on_init: bool = False):
+        self.position_dict[p_position] = p_item
+        if len(self.position_dict) != 1 or not set_border_on_init:
+            self.min_x = min(self.min_x, p_position.x)
+            self.max_x = max(self.max_x, p_position.x)
+            self.min_y = min(self.min_y, p_position.y)
+            self.max_y = max(self.max_y, p_position.y)
+            self.min_z = min(self.min_z, p_position.z)
+            self.max_z = max(self.max_z, p_position.z)
+        else:
+            self.min_x = self.max_x = p_position.x
+            self.min_y = self.max_y = p_position.y
+            self.min_z = self.max_z = p_position.z
 
 
 def plane_intersection(p_plane1: CPlane, p_plane2: CPlane) -> CPlaneLine:
