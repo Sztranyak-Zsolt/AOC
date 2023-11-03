@@ -3,6 +3,7 @@ from enum import Enum
 from collections import deque, namedtuple
 from typing import Self, Iterable
 from GENERICS.aoc_space import Position3D
+from functools import cache
 
 
 Position2D = namedtuple('Position2D', ['x', 'y'])
@@ -67,8 +68,8 @@ def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] | Posi
                     continue
                 for z in [1, 0, -1]:
                     if x == y == z == 0 and p_return_self \
-                            or [x, y, z].count(0) == 2 and p_return_corner \
-                            or [x, y, z].count(0) in [0, 1] and p_return_near:
+                            or [x, y, z].count(0) == 2 and p_return_near \
+                            or [x, y, z].count(0) in [0, 1] and p_return_corner:
                         yield p_position[0] + x, p_position[1] + y, p_position[2] + z
     for np in np_inner():
         if isinstance(p_position, Position2D):
@@ -163,10 +164,10 @@ class CGridBase:
 
     def create_or_refresh_mirror_y(self):
         self.y_mirrored_grid = mg = self.__class__()
+        mg.y_mirrored_grid = self
         mg.min_x, mg.max_x, mg.min_y, mg.max_y = self.min_x, self.max_x, self.min_y, self.max_y
         for p_position, pv in self.position_dict.items():
             mg.add_item(Position2D(self.min_x + self.max_x - p_position.x, p_position.y), pv)
-        self.y_mirrored_grid.y_mirrored_grid = self
         return self.y_mirrored_grid
 
     def create_or_refresh_mirror_x(self):
@@ -265,6 +266,8 @@ class CGridBase:
                       p_add_position_bottom_left.y + sg_pos_y) in self.position_dict:
                     del self.position_dict[Position2D(p_add_position_bottom_left.x + sg_pos_x,
                                                       p_add_position_bottom_left.y + sg_pos_y)]
+        self.min_x = min(self.min_x, p_add_position_bottom_left.x)
+        self.min_y = min(self.min_y, p_add_position_bottom_left.y)
         self.max_x = max(self.max_x, p_add_position_bottom_left.x + x_length)
         self.max_y = max(self.max_y, p_add_position_bottom_left.y + y_length)
 
@@ -274,10 +277,42 @@ class CGridBase:
     def is_corner(self, p_position: Position2D) -> bool:
         return p_position.x in [self.min_x, self.max_x] and p_position.y in [self.min_y, self.max_y]
 
+    def get_column(self, p_column: int) -> Self:
+        return self.get_subgrid(Position2D(p_column, self.min_y), Position2D(p_column, self.max_y))
+
+    def get_row(self, p_row: int) -> Self:
+        return self.get_subgrid(Position2D(self.min_x, p_row), Position2D(self.max_x, p_row))
+
+    @cache
+    def get_edge(self, p_direction: Position2D) -> Self:
+        if p_direction == Position2D(0, 1):
+            return self.get_row(self.max_x)
+        elif p_direction == Position2D(0, -1):
+            return self.get_row(self.min_x)
+        if p_direction == Position2D(1, 0):
+            return self.get_column(self.max_y)
+        elif p_direction == Position2D(-1, 0):
+            return self.get_column(self.min_y)
+
     def yield_all_position(self) -> Iterable[Position2D]:
         for act_x in range(self.min_x, self.max_x + 1):
             for act_y in range(self.min_y, self.max_y + 1):
                 yield Position2D(act_x, act_y)
+
+    def count_all_cover(self, pict_to_cover: CGridBase) -> int:
+        rv = 0
+        dif_p = []
+        pic_1st_point = list(pict_to_cover.position_dict)[0]
+        for next_p in pict_to_cover.position_dict:
+            dif_p.append(Position2D(next_p.x - pic_1st_point.x, next_p.y - pic_1st_point.y))
+        for act_grid_point in self.position_dict:
+            for points_to_check in dif_p:
+                if Position2D(act_grid_point.x + points_to_check.x, act_grid_point.y + points_to_check.y) \
+                        not in self.position_dict:
+                    break
+            else:
+                rv += 1
+        return rv
 
     def __str__(self):
         ret_lst = list()

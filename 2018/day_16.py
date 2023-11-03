@@ -2,6 +2,7 @@ from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from typing import Callable
 from functools import cached_property
+from GENERICS.aoc_link_decoder import CCodeDecode
 
 
 def addr(p_act_register: dict[int, int], input_a: int, input_b: int, output_c: int) -> int:
@@ -85,8 +86,8 @@ def eqrr(p_act_register: dict[int, int], input_a: int, input_b: int, output_c: i
 
 
 operation_dict = {'addr': addr, 'addi': addi, 'mulr': mulr, 'muli': muli, 'banr': banr, 'bani': bani, 'borr': borr,
-                      'bori': bori, 'setr': setr, 'seti': seti, 'gtir': gtir, 'gtri': gtri, 'gtrr': gtrr, 'eqir': eqir,
-                      'eqri': eqri, 'eqrr': eqrr}
+                  'bori': bori, 'setr': setr, 'seti': seti, 'gtir': gtir, 'gtri': gtri, 'gtrr': gtrr, 'eqir': eqir,
+                  'eqri': eqri, 'eqrr': eqrr}
 
 
 class CTest:
@@ -109,61 +110,16 @@ class CTestHandler:
     def __init__(self, p_operation_set: set[Callable]):
         self.test_list: list[CTest] = []
         self.operation_set = p_operation_set
-        self.operation_codes: dict[int, set[Callable]] = dict()
-        self.operation_decodes: dict[Callable, set[int]] = dict()
-        for op in p_operation_set:
-            self.operation_decodes[op] = set()
+        self.decoder = CCodeDecode()
 
     def add_test_case(self, p_test_case: CTest):
         poss_operations = p_test_case.get_possible_operations(self.operation_set)
         self.test_list.append(p_test_case)
-        if p_test_case.act_code not in self.operation_codes:
-            self.operation_codes[p_test_case.act_code] = poss_operations
-            for act_operation in poss_operations:
-                self.operation_decodes[act_operation].add(p_test_case.act_code)
-        else:
-            op_to_remove = self.operation_codes[p_test_case.act_code] - poss_operations
-            self.operation_codes[p_test_case.act_code] &= poss_operations
-            for act_operation in op_to_remove:
-                self.operation_decodes[act_operation].remove(p_test_case.act_code)
-
-    def reduce_operation_codes(self):
-        operation_found = set()
-        for act_op_coded, act_operation_decoded_set in self.operation_codes.items():
-            if len(act_operation_decoded_set) == 1 \
-                    and len(self.operation_decodes[list(act_operation_decoded_set)[0]]) != 1:
-                act_op_decoded = list(act_operation_decoded_set)[0]
-                self.operation_codes[act_op_coded] = {act_op_decoded}
-                self.operation_decodes[act_op_decoded] = {act_op_coded}
-                operation_found.add(act_op_decoded)
-        for op_to_adjust in operation_found:
-            for act_op_coded, act_operation_decoded_set in self.operation_codes.items():
-                if act_op_coded not in self.operation_decodes[op_to_adjust] \
-                        and op_to_adjust in act_operation_decoded_set:
-                    self.operation_codes[act_op_coded].remove(op_to_adjust)
-        return len(operation_found) != 0
-
-    def reduce_operation_decodes(self):
-        operation_found = set()
-        for act_op_decoded, act_operation_coded_set in self.operation_decodes.items():
-            if len(act_operation_coded_set) == 1 \
-                    and len(self.operation_codes[list(act_operation_coded_set)[0]]) != 1:
-                act_op_coded = list(act_operation_coded_set)[0]
-                self.operation_decodes[act_op_decoded] = {act_op_coded}
-                self.operation_codes[act_op_coded] = {act_op_decoded}
-                operation_found.add(act_op_coded)
-        for op_to_adjust in operation_found:
-            for act_op_decoded, act_operation_coded_set in self.operation_decodes.items():
-                if act_op_decoded not in self.operation_codes[op_to_adjust] \
-                        and op_to_adjust in act_operation_coded_set:
-                    self.operation_decodes[act_op_decoded].remove(op_to_adjust)
-        return len(operation_found) != 0
+        self.decoder.add_code_link(p_test_case.act_code, poss_operations)
 
     @cached_property
     def get_mapping(self) -> dict[int, Callable]:
-        while self.reduce_operation_codes() or self.reduce_operation_decodes():
-            pass
-        return {k: list(v)[0] for k, v in self.operation_codes.items()}
+        return self.decoder.get_code_mapping
 
 
 class CProgram:

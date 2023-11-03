@@ -3,6 +3,7 @@ from typing import Callable
 import time
 import aocd  # pip install advent-of-code-data
 from os import path, mkdir
+from GENERICS.aoc_grid import CGridBase
 
 solution_func = Callable[[str], tuple[int | str, int | str | None]]
 
@@ -78,6 +79,19 @@ def yield_input_data(p_file_name: str,
         return
     for d_raw_data_group in d_raw_data.split(p_group_separator):
         yield list(yield_data_inner(d_raw_data_group))
+
+
+def grid_from_input(p_file_name: str,
+                    p_only_nums: bool = False,
+                    p_convert_to_num: bool = True,
+                    p_chars_to_space: str = '',
+                    p_chars_to_skip: str = '',
+                    p_item_type: type[str] | type[int] = str):
+    r_grid = CGridBase()
+    for inp_row in yield_input_data(p_file_name, p_whole_row=True, p_only_nums=p_only_nums,
+                                    p_convert_to_num=p_convert_to_num, p_chars_to_space=p_chars_to_space):
+        r_grid.add_row(inp_row, p_chars_to_skip=p_chars_to_skip, p_item_type=p_item_type)
+    return r_grid
 
 
 def main():

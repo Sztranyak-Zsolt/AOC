@@ -1,17 +1,7 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_tree import CTreeNode
+from GENERICS.aoc_tree import CTreeNode, CTreeHandler
 from collections import defaultdict
-
-
-class CTreeHandler:
-    def __init__(self):
-        self.node_dict: dict[str, CTreeNode] = {}
-
-    def get_tree_node(self, p_node_id: str) -> CTreeNode:
-        if p_node_id not in self.node_dict:
-            self.node_dict[p_node_id] = CTreeNode(p_node_id)
-        return self.node_dict[p_node_id]
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):

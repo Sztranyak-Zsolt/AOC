@@ -53,3 +53,13 @@ class CTreeNode:
         while act_parent:
             yield act_parent
             act_parent = act_parent.parent_item
+
+
+class CTreeHandler:
+    def __init__(self):
+        self.node_dict: dict[str, CTreeNode] = {}
+
+    def get_tree_node(self, p_node_id: str) -> CTreeNode:
+        if p_node_id not in self.node_dict:
+            self.node_dict[p_node_id] = CTreeNode(p_node_id)
+        return self.node_dict[p_node_id]
