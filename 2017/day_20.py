@@ -1,6 +1,6 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import add_positions
+from GENERICS.aoc_vector import CVector3D
 
 
 def sign(n: int):
@@ -13,9 +13,9 @@ def sign(n: int):
 
 class CParticle:
     def __init__(self, p_id: int,
-                 p_position: tuple[int, int, int],
-                 p_velocity: tuple[int, int, int],
-                 p_acceleration: tuple[int, int, int]):
+                 p_position: CVector3D,
+                 p_velocity: CVector3D,
+                 p_acceleration: CVector3D):
         self.id = p_id
         self.position = p_position
         self.velocity = p_velocity
@@ -23,13 +23,13 @@ class CParticle:
 
     def get_next_phase(self) -> CParticle:
         next_phase_particle = CParticle(self.id, self.position, self.velocity, self.acceleration)
-        next_phase_particle.velocity = add_positions(next_phase_particle.velocity, next_phase_particle.acceleration)
-        next_phase_particle.position = add_positions(next_phase_particle.position, next_phase_particle.velocity)
+        next_phase_particle.velocity = next_phase_particle.velocity + next_phase_particle.acceleration
+        next_phase_particle.position = next_phase_particle.position + next_phase_particle.velocity
         return next_phase_particle
 
     def __lt__(self, other: CParticle):
-        a1 = sum([abs(a) for a in self.acceleration])
-        a2 = sum([abs(a) for a in other.acceleration])
+        a1 = int(self.acceleration)
+        a2 = int(other.acceleration)
         v1 = v2 = 0
         for i in range(3):
             if sign(self.velocity[i]) == sign(self.acceleration[i]) or self.acceleration[i] == 0:
@@ -70,7 +70,8 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     ph = CParticleHandler()
     for particle_id, inp_row in enumerate(yield_input_data(p_input_file_path, p_chars_to_space='pva=<>,',
                                                            p_only_nums=True)):
-        ph.particle_list.append(CParticle(particle_id, tuple(inp_row[:3]), tuple(inp_row[3:6]), tuple(inp_row[6:])))
+        ph.particle_list.append(CParticle(particle_id, CVector3D(*inp_row[:3]),
+                                          CVector3D(*inp_row[3:6]), CVector3D(*inp_row[6:])))
     answer1 = min(ph.particle_list).id
 
     for i in range(100):

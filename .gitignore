@@ -1,2 +1,5 @@
 /venv/
 test.py
+unit_test.py
+unit_test_data.txt
+/.idea/

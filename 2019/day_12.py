@@ -1,6 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_space import CSpaceBase, Position3D
-from GENERICS.aoc_grid import add_positions, mh_distance
+from GENERICS.aoc_space import CSpaceBase, CVector3D
 from math import lcm
 
 
@@ -15,33 +14,33 @@ def sign(p_num: int) -> int:
 class CSpace(CSpaceBase):
     def __init__(self):
         super().__init__()
-        self.velocity: dict[int, Position3D] = {}
+        self.velocity: dict[int, CVector3D] = {}
 
-    def add_item(self, p_position: Position3D, p_moon_index: int,
+    def add_item(self, p_position: CVector3D, p_moon_index: int,
                  set_border_on_init: bool = False):
         super().add_item(p_position, p_moon_index, set_border_on_init)
-        self.velocity[p_moon_index] = Position3D(0, 0, 0)
+        self.velocity[p_moon_index] = CVector3D(0, 0, 0)
 
     def recalc_velocity(self):
         for act_moon, act_moon_index in self.position_dict.items():
             for next_moon in self.position_dict:
-                vel_difi = Position3D(sign(next_moon.x - act_moon.x), sign(next_moon.y - act_moon.y),
-                                      sign(next_moon.z - act_moon.z))
-                self.velocity[act_moon_index] = add_positions(self.velocity[act_moon_index], vel_difi)
+                vel_difi = CVector3D(sign(next_moon.x - act_moon.x), sign(next_moon.y - act_moon.y),
+                                     sign(next_moon.z - act_moon.z))
+                self.velocity[act_moon_index] = self.velocity[act_moon_index] + vel_difi
 
     def move_moons(self):
         self.recalc_velocity()
         new_position_dict = {}
         for act_moon_pos, act_moon_index in self.position_dict.items():
-            new_position_dict[add_positions(act_moon_pos, self.velocity[act_moon_index])] = act_moon_index
+            new_position_dict[act_moon_pos + self.velocity[act_moon_index]] = act_moon_index
         self.position_dict = new_position_dict
 
     @property
     def act_energy(self) -> int:
         rv = 0
         for act_moon, act_moon_index in self.position_dict.items():
-            pot = mh_distance(act_moon, Position3D(0, 0, 0))
-            kin = mh_distance(self.velocity[act_moon_index], Position3D(0, 0, 0))
+            pot = int(act_moon)
+            kin = int(self.velocity[act_moon_index])
             rv += pot * kin
         return rv
 
@@ -74,7 +73,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
 
     s = CSpace()
     for i, (x, y, z) in enumerate(yield_input_data(p_input_file_path, p_chars_to_space='<>xyz,=')):
-        s.add_item(Position3D(x, y, z), i)
+        s.add_item(CVector3D(x, y, z), i)
 
     for _ in range(1000):
         s.move_moons()

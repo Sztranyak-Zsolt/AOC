@@ -1,6 +1,6 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from Intcode import CIntCode
-from GENERICS.aoc_grid import Position2D
+from GENERICS.aoc_vector import Position2D
 from copy import copy
 from typing import Iterator
 
@@ -27,12 +27,12 @@ class CTractorBeam:
         row_dynamic_dict = {}
         for act_y, act_period_from, act_period_to in self.yield_row_period():
             row_dynamic_dict[act_y] = (act_period_from, act_period_to)
-            if act_y - p_height in row_dynamic_dict:
-                prev_period_from, prev_period_to = row_dynamic_dict.pop(act_y - p_height)
+            if act_y - p_height + 1 in row_dynamic_dict:
+                prev_period_from, prev_period_to = row_dynamic_dict.pop(act_y - p_height + 1)
                 if prev_period_from is None:
                     continue
-                if prev_period_to - act_period_from >= p_width:
-                    return Position2D(act_period_from, act_y)
+                if prev_period_to - act_period_from >= p_width - 1:
+                    return Position2D(act_period_from, act_y - p_height + 1)
 
     def yield_row_period(self) -> Iterator[tuple[int, int | None, int | None]]:
         act_x = act_y = 0

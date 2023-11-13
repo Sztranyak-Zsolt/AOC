@@ -1,5 +1,6 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, Position2D, neighbor_positions, add_positions
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import Position2D, neighbor_positions, add_positions
 from collections import deque
 from functools import cache
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, Position2D
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import add_positions, Position2D
 
 
 class CVCarrier(CGridBase):

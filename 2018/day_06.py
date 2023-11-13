@@ -1,12 +1,13 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, mh_distance, Position2D
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import mh_distance, Position2D
 
 
 class CSpaceGrid(CGridBase):
     def __init__(self):
         super().__init__()
 
-    def get_closest_id(self, p_position: tuple[int, int]) -> int | None:
+    def get_closest_id(self, p_position: Position2D) -> int | None:
         rv = closest_distance = None
         for k, v in self.position_dict.items():
             if closest_distance is None or (act_distance := mh_distance(k, p_position)) < closest_distance:
@@ -17,7 +18,7 @@ class CSpaceGrid(CGridBase):
                 rv = None
         return rv
 
-    def get_sum_mh_distance(self, p_position: tuple[int, int]) -> int:
+    def get_sum_mh_distance(self, p_position: Position2D) -> int:
         return sum([mh_distance(k, p_position) for k in self.position_dict])
 
     def calc_safe_points(self, p_safe_distance: int) -> int:

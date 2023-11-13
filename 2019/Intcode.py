@@ -53,7 +53,7 @@ class CIntCode:
         self.relative_base = 0
         self.input_list.clear()
         self.input_list += self.init_input_list
-        self.output_list.clear()
+        self.output_list = [] #.clear()
         self.program_finished = False
 
     def read_memory(self, p_mode: int = 0) -> int:

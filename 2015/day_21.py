@@ -1,4 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
 
 
 class CItem:
@@ -83,7 +84,8 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     boss = CPlayer("BOSS", next(input_iter)[-1], next(input_iter)[-1], next(input_iter)[-1])
     shop = CItemShop()
 
-    for name, cost, damage, armor, item_type in yield_input_data('input/input_201521_items.txt'):
+    for name, cost, damage, armor, item_type in yield_input_data(os.path.join(os.path.dirname(__file__),
+                                                                              'input/input_201521_items.txt')):
         shop.add_item(CItem(name, cost, damage, armor, item_type))
     shop.add_item(CItem("No_armor", 0, 0, 0, "Armor"))
     shop.add_item(CItem("No_ring", 0, 0, 0, "Ring"))

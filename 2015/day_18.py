@@ -15,7 +15,7 @@ class CGrid(CGridBase):
     def count_lights_on(self):
         return len(self.position_dict)
 
-    def calc_neighbor_on(self, p_position: tuple[int, int]) -> int:
+    def calc_neighbor_on(self, p_position: Position2D) -> int:
         lights_on_counter = 0
         for neighbor_position in neighbor_positions(p_position, True, True):
             if neighbor_position in self.position_dict:
@@ -26,7 +26,7 @@ class CGrid(CGridBase):
         new_grid = CGrid()
         for x in range(self.min_x, self.max_x + 1):
             for y in range(self.min_y, self.max_y + 1):
-                neighbor_count = self.calc_neighbor_on((x, y))
+                neighbor_count = self.calc_neighbor_on(Position2D(x, y))
                 if (x, y) in self.position_dict and neighbor_count in [2, 3]:
                     new_grid.add_item(Position2D(x, y), "#")
                     continue

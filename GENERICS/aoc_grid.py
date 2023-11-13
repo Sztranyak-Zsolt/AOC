@@ -1,102 +1,14 @@
 from __future__ import annotations
-from enum import Enum
-from collections import deque, namedtuple
+from collections import deque
 from typing import Self, Iterable
-from GENERICS.aoc_space import Position3D
+from GENERICS.aoc_vector import neighbor_positions, TP2D, Position2D
 from functools import cache
-
-
-Position2D = namedtuple('Position2D', ['x', 'y'])
-
-
-class DIRS(Enum):
-    UP = Position2D(0, 1)
-    LEFT = Position2D(-1, 0)
-    DOWN = Position2D(0, -1)
-    RIGHT = Position2D(1, 0)
-
-
-def add_positions(*args: tuple[int, ...] | Position2D | Position3D):
-    """
-    Function summarize each dimensions of the given positions and return the result as tuple.
-    :param args: position list to be added
-    :return: aggregated position, length is equal to the longest parameter length
-    """
-    d_arg_item_length = max([len(ti) for ti in args])
-    r_l = [0] * max([len(ti) for ti in args])
-    for p_item in args:
-        for d_i in range(d_arg_item_length):
-            try:
-                r_l[d_i] += p_item[d_i]
-            except IndexError:
-                pass
-    if all(isinstance(x, Position2D) for x in args):
-        return Position2D(r_l[0], r_l[1])
-    if all(isinstance(x, Position3D) for x in args):
-        return Position3D(r_l[0], r_l[1], r_l[2])
-    return tuple(r_l)
-
-
-def mul_position(p_position: tuple[int, ...] | Position2D | Position3D, p_multiplier: int) \
-        -> tuple[int, ...] | Position2D | Position3D:
-    """
-    Function multiply a position with an integer.
-    """
-    r_l = []
-    for p_pos_single in p_position:
-        r_l.append(p_pos_single * p_multiplier)
-    if isinstance(p_position, Position2D):
-        return Position2D(r_l[0], r_l[1])
-    if isinstance(p_position, Position3D):
-        return Position3D(r_l[0], r_l[1], r_l[2])
-    return tuple(r_l)
-
-
-def neighbor_positions(p_position: tuple[int, int] | tuple[int, int, int] | Position2D | Position3D = Position2D(0, 0),
-                       p_return_near: bool = True,
-                       p_return_corner: bool = False,
-                       p_return_self: bool = False) \
-        -> Iterable[tuple[int, int] | tuple[int, int, int] | Position2D | Position3D]:
-    def np_inner():
-        for x in [1, 0, -1]:
-            for y in [1, 0, -1]:
-                if len(p_position) == 2:
-                    if (p_return_self and x == y == 0
-                            or p_return_near and x + y in [1, -1]
-                            or p_return_corner and x != 0 and y != 0):
-                        yield p_position[0] + x, p_position[1] + y
-                    continue
-                for z in [1, 0, -1]:
-                    if x == y == z == 0 and p_return_self \
-                            or [x, y, z].count(0) == 2 and p_return_near \
-                            or [x, y, z].count(0) in [0, 1] and p_return_corner:
-                        yield p_position[0] + x, p_position[1] + y, p_position[2] + z
-    for np in np_inner():
-        if isinstance(p_position, Position2D):
-            yield Position2D(np[0], np[1])
-        elif isinstance(p_position, Position3D):
-            yield Position3D(np[0], np[1], np[2])
-        else:
-            yield np
-
-
-def mh_distance(p_position1: tuple[int, ...] | Position2D | Position3D,
-                p_position2: tuple[int, ...] | Position2D | Position3D) -> int:
-    """
-    Return the manhattan distance of the positions.
-    :param p_position1: base position
-    :param p_position2: target position
-    :return: manhattan distance of the two positions
-    """
-    rv = 0
-    for i_p1, i_p2 in zip(p_position1, p_position2):
-        rv += abs(i_p1 - i_p2)
-    return rv
 
 
 class CGridBase:
     def __init__(self):
-        self.position_dict: dict[Position2D, str | bool | int] = {}
+        self.position_dict: dict[TP2D, str | bool | int | object] = {}
+        self.position_type: type[TP2D] = Position2D
         self.min_x = self.min_y = self.max_x = self.max_y = 0
         self.double_width_on_print = False
         self.print_y_reverse = False
@@ -104,9 +16,17 @@ class CGridBase:
         self.x_mirrored_grid: Self | None = None
         self.left_rotated_grid: Self | None = None
 
-    def add_item(self, p_position: Position2D, p_item: str | int | bool,
+    @property
+    def normalized_grid(self):
+        if self.min_x == self.min_y == 0 or not self.position_dict:
+            return self
+        return self.offset_grid(self.position_type(-self.min_x, -self.min_y))
+
+    def add_item(self, p_position: TP2D, p_item: str | int | bool | object,
                  set_border_on_init: bool = False):
         self.position_dict[p_position] = p_item
+        if not self.position_dict:
+            self.position_type = type(p_position)
         if len(self.position_dict) != 1 or not set_border_on_init:
             self.min_x = min(self.min_x, p_position.x)
             self.max_x = max(self.max_x, p_position.x)
@@ -117,7 +37,7 @@ class CGridBase:
             self.min_y = self.max_y = p_position.y
 
     def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
-                p_item_type: type[str] | type[int] = str):
+                p_item_type: type[str] | type[int] = str, p_position_type: type[TP2D] = Position2D):
         if p_row_number is None:
             if len(self.position_dict) == 0:
                 p_row_number = 0
@@ -126,9 +46,9 @@ class CGridBase:
         for x, p_item_value in enumerate(p_row):
             if p_item_value not in p_chars_to_skip:
                 if type(p_item_type) == str:
-                    self.add_item(Position2D(x, p_row_number), p_item_value)
+                    self.add_item(p_position_type(x, p_row_number), p_item_value)
                 else:
-                    self.add_item(Position2D(x, p_row_number), p_item_type(p_item_value))
+                    self.add_item(p_position_type(x, p_row_number), p_item_type(p_item_value))
         self.min_y = min(self.min_y, p_row_number)
         self.max_y = max(self.max_y, p_row_number)
         self.max_x = max(self.max_x, len(p_row) - 1)
@@ -167,14 +87,14 @@ class CGridBase:
         mg.y_mirrored_grid = self
         mg.min_x, mg.max_x, mg.min_y, mg.max_y = self.min_x, self.max_x, self.min_y, self.max_y
         for p_position, pv in self.position_dict.items():
-            mg.add_item(Position2D(self.min_x + self.max_x - p_position.x, p_position.y), pv)
+            mg.add_item(self.position_type(self.min_x + self.max_x - p_position.x, p_position.y), pv)
         return self.y_mirrored_grid
 
     def create_or_refresh_mirror_x(self):
         self.x_mirrored_grid = mg = self.__class__()
         mg.min_x, mg.max_x, mg.min_y, mg.max_y = self.min_x, self.max_x, self.min_y, self.max_y
         for p_position, pv in self.position_dict.items():
-            mg.add_item(Position2D(p_position.x, self.min_y + self.max_y - p_position.y), pv)
+            mg.add_item(self.position_type(p_position.x, self.min_y + self.max_y - p_position.y), pv)
         self.x_mirrored_grid.x_mirrored_grid = self
         return self.x_mirrored_grid
 
@@ -188,8 +108,8 @@ class CGridBase:
         mg.min_x, mg.max_x = self.min_x, self.min_x + self.max_y - self.min_y
         mg.min_y, mg.max_y = self.min_y, self.min_y + self.max_x - self.min_x
         for p_position, pv in self.position_dict.items():
-            mg.add_item(Position2D(self.min_x + (p_position.y - self.min_y),
-                                   self.min_y + (self.max_x - p_position.x)), pv)
+            mg.add_item(self.position_type(self.min_x + (p_position.y - self.min_y),
+                                           self.min_y + (self.max_x - p_position.x)), pv)
         return self.left_rotated_grid
 
     def set_rotations(self):
@@ -223,6 +143,18 @@ class CGridBase:
             yield ag.y_mirrored_grid
             ag = ag.left_rotated_grid
 
+    def offset_grid(self, p_vector: TP2D) -> CGridBase:
+        new_offset_grid = self.__class__()
+        new_offset_grid.position_type = self.position_type
+        new_offset_grid.min_x = self.min_x + p_vector.x
+        new_offset_grid.max_x = self.max_x + p_vector.x
+        new_offset_grid.min_y = self.min_y + p_vector.y
+        new_offset_grid.max_y = self.max_y + p_vector.y
+        for act_position, act_value in self.position_dict.items():
+            new_offset_grid.add_item(self.position_type(act_position.x + p_vector.x, act_position.y + p_vector.y),
+                                     act_value)
+        return new_offset_grid
+
     def __eq__(self, other: Self):
         if self is other:
             return True
@@ -236,7 +168,7 @@ class CGridBase:
             return False
         return True
 
-    def get_subgrid(self, p_pos1: Position2D, p_pos2: Position2D, p_keep_min_positions: bool = False) -> Self:
+    def get_subgrid(self, p_pos1: TP2D, p_pos2: TP2D, p_keep_min_positions: bool = False) -> Self:
         part_grid = self.__class__()
         min_x, max_x = min(p_pos1.x, p_pos2.x), max(p_pos1.x, p_pos2.x)
         min_y, max_y = min(p_pos1.y, p_pos2.y), max(p_pos1.y, p_pos2.y)
@@ -248,24 +180,25 @@ class CGridBase:
         for pos_y in range(min_y, max_y + 1):
             for pos_x in range(min_x, max_x + 1):
                 if (pos_x, pos_y) in self.position_dict:
-                    part_grid.add_item(Position2D(part_grid.min_x + pos_x - min_x, part_grid.min_y + pos_y - min_y),
+                    part_grid.add_item(self.position_type(part_grid.min_x + pos_x - min_x,
+                                                          part_grid.min_y + pos_y - min_y),
                                        self.position_dict[(pos_x, pos_y)])
         return part_grid
 
-    def add_subgrid(self, p_add_position_bottom_left: Position2D, p_subgrid: Self):
+    def add_subgrid(self, p_add_position_bottom_left: TP2D, p_subgrid: Self):
         x_length = p_subgrid.max_x - p_subgrid.min_x
         y_length = p_subgrid.max_y - p_subgrid.min_y
 
         for sg_pos_y in range(p_subgrid.min_y, p_subgrid.max_y + 1):
             for sg_pos_x in range(p_subgrid.min_x, p_subgrid.max_x + 1):
                 if (sg_pos_x, sg_pos_y) in p_subgrid.position_dict:
-                    self.position_dict[Position2D(p_add_position_bottom_left.x + sg_pos_x,
-                                                  p_add_position_bottom_left.y + sg_pos_y)] = \
-                        p_subgrid.position_dict[Position2D(sg_pos_x, sg_pos_y)]
+                    self.position_dict[self.position_type(p_add_position_bottom_left.x + sg_pos_x,
+                                                          p_add_position_bottom_left.y + sg_pos_y)] = \
+                        p_subgrid.position_dict[self.position_type(sg_pos_x, sg_pos_y)]
                 elif (p_add_position_bottom_left.x + sg_pos_x,
                       p_add_position_bottom_left.y + sg_pos_y) in self.position_dict:
-                    del self.position_dict[Position2D(p_add_position_bottom_left.x + sg_pos_x,
-                                                      p_add_position_bottom_left.y + sg_pos_y)]
+                    del self.position_dict[self.position_type(p_add_position_bottom_left.x + sg_pos_x,
+                                                              p_add_position_bottom_left.y + sg_pos_y)]
         self.min_x = min(self.min_x, p_add_position_bottom_left.x)
         self.min_y = min(self.min_y, p_add_position_bottom_left.y)
         self.max_x = max(self.max_x, p_add_position_bottom_left.x + x_length)
@@ -278,36 +211,39 @@ class CGridBase:
         return p_position.x in [self.min_x, self.max_x] and p_position.y in [self.min_y, self.max_y]
 
     def get_column(self, p_column: int) -> Self:
-        return self.get_subgrid(Position2D(p_column, self.min_y), Position2D(p_column, self.max_y))
+        return self.get_subgrid(self.position_type(p_column, self.min_y), self.position_type(p_column, self.max_y))
 
     def get_row(self, p_row: int) -> Self:
-        return self.get_subgrid(Position2D(self.min_x, p_row), Position2D(self.max_x, p_row))
+        return self.get_subgrid(self.position_type(self.min_x, p_row), self.position_type(self.max_x, p_row))
 
     @cache
-    def get_edge(self, p_direction: Position2D) -> Self:
-        if p_direction == Position2D(0, 1):
+    def get_edge(self, p_direction: TP2D) -> Self:
+        if p_direction == self.position_type(0, 1):
             return self.get_row(self.max_x)
-        elif p_direction == Position2D(0, -1):
+        elif p_direction == self.position_type(0, -1):
             return self.get_row(self.min_x)
-        if p_direction == Position2D(1, 0):
+        if p_direction == self.position_type(1, 0):
             return self.get_column(self.max_y)
-        elif p_direction == Position2D(-1, 0):
+        elif p_direction == self.position_type(-1, 0):
             return self.get_column(self.min_y)
 
-    def yield_all_position(self) -> Iterable[Position2D]:
+    def yield_all_position(self, p_as_tuple: bool = False) -> Iterable[TP2D]:
         for act_x in range(self.min_x, self.max_x + 1):
             for act_y in range(self.min_y, self.max_y + 1):
-                yield Position2D(act_x, act_y)
+                if p_as_tuple:
+                    yield act_x, act_y
+                else:
+                    yield self.position_type(act_x, act_y)
 
     def count_all_cover(self, pict_to_cover: CGridBase) -> int:
         rv = 0
         dif_p = []
         pic_1st_point = list(pict_to_cover.position_dict)[0]
         for next_p in pict_to_cover.position_dict:
-            dif_p.append(Position2D(next_p.x - pic_1st_point.x, next_p.y - pic_1st_point.y))
+            dif_p.append(self.position_type(next_p.x - pic_1st_point.x, next_p.y - pic_1st_point.y))
         for act_grid_point in self.position_dict:
             for points_to_check in dif_p:
-                if Position2D(act_grid_point.x + points_to_check.x, act_grid_point.y + points_to_check.y) \
+                if self.position_type(act_grid_point.x + points_to_check.x, act_grid_point.y + points_to_check.y) \
                         not in self.position_dict:
                     break
             else:
@@ -321,7 +257,7 @@ class CGridBase:
         for y in range(self.max_y, self.min_y - 1, -1)[yr]:
             act_row = ''
             for x in range(self.min_x, self.max_x + 1):
-                if (x, y) in self.position_dict:
+                if self.position_type(x, y) in self.position_dict:
                     act_row += f"{self.position_dict[(x, y)]}@"[0] * c_length
                 else:
                     act_row += ' ' * c_length

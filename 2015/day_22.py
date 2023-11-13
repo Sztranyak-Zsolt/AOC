@@ -1,6 +1,7 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from copy import copy
 import heapq
+import os
 
 
 class CSpell:
@@ -132,7 +133,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     me = CPlayer("Me", 50, 0, 0, 500)
     boss = CPlayer("BOSS", next(input_iter)[-1], next(input_iter)[-1], 0, 0)
     spellbook = CSpellBook()
-    for spell_row in yield_input_data('input/input_201522_spells.txt'):
+    for spell_row in yield_input_data(os.path.join(os.path.dirname(__file__), 'input/input_201522_spells.txt')):
         spellbook.spell_list.append(CSpell(*spell_row))
 
     game_state = CTurnState(me, boss, False)

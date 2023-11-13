@@ -8,7 +8,7 @@ from itertools import permutations
 class CGrid(CGridBase):
     def __init__(self):
         super().__init__()
-        self.distance_dict: dict[Position2D, int] = {}
+        self.distance_dict: dict[tuple[str, str], int] = {}
 
     @cached_property
     def point_dict(self) -> dict[str, Position2D]:

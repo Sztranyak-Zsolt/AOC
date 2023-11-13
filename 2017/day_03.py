@@ -1,25 +1,26 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, mh_distance, neighbor_positions, Position2D
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import neighbor_positions, CVector2D
 
 
 class CSpiral(CGridBase):
-    directions = [Position2D(0, 1), Position2D(1, 0), Position2D(0, -1), Position2D(-1, 0)]
+    directions = [CVector2D(0, 1), CVector2D(1, 0), CVector2D(0, -1), CVector2D(-1, 0)]
 
     def __init__(self, p_advanced_spiral: bool = False):
         super().__init__()
         self.act_dir_index = 0
-        self.last_position: Position2D | None = None
+        self.last_position: CVector2D | None = None
         self.advanced_spiral = p_advanced_spiral
 
     def add_spiral_item(self) -> int:
         if self.last_position is None:
-            self.position_dict[Position2D(0, 0)] = 1
-            self.last_position = Position2D(0, 0)
+            self.position_dict[CVector2D(0, 0)] = 1
+            self.last_position = CVector2D(0, 0)
             return 1
         next_dir_index = (self.act_dir_index + 1) % 4
-        if add_positions(self.last_position, self.directions[next_dir_index]) not in self.position_dict:
+        if self.last_position + self.directions[next_dir_index] not in self.position_dict:
             self.act_dir_index = next_dir_index
-        next_position = add_positions(self.last_position, self.directions[self.act_dir_index])
+        next_position = self.last_position + self.directions[self.act_dir_index]
         if not self.advanced_spiral:
             act_item_value = self.position_dict[self.last_position]
             self.last_position = next_position
@@ -40,7 +41,7 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     s1 = CSpiral()
     while s1.add_spiral_item() <= input_num:
         pass
-    answer1 = mh_distance(s1.last_position, Position2D(0, 0)) - 1
+    answer1 = int(s1.last_position) - 1
 
     s2 = CSpiral(True)
     while (answer2 := s2.add_spiral_item()) <= input_num:

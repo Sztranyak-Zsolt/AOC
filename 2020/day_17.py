@@ -1,6 +1,5 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_space import Position3D
-from GENERICS.aoc_grid import neighbor_positions
+from GENERICS.aoc_vector import Position3D, neighbor_positions
 from collections import namedtuple
 from typing import Iterator
 

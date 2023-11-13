@@ -1,18 +1,18 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import mh_distance, Position2D, add_positions, mul_position
+from GENERICS.aoc_vector import CVector2D
 
 
 class CShip:
-    direction_dict = {'E': Position2D(1, 0), 'S': Position2D(0, -1), 'W': Position2D(-1, 0), 'N': Position2D(0, 1)}
+    direction_dict = {'E': CVector2D(1, 0), 'S': CVector2D(0, -1), 'W': CVector2D(-1, 0), 'N': CVector2D(0, 1)}
     turn_dict = {'L': -1, 'R': 1}
 
     def __init__(self):
-        self.starting_position = Position2D(0, 0)
-        self.starting_direction = Position2D(1, 0)
+        self.starting_position = CVector2D(0, 0)
+        self.starting_direction = CVector2D(1, 0)
         self.instruction_list: list[list[str, int]] = list()
 
     @property
-    def route_end_position(self) -> Position2D:
+    def route_end_position(self) -> CVector2D:
         act_position = self.starting_position
         act_dir = self.starting_direction
         for i, v in self.instruction_list:
@@ -25,34 +25,34 @@ class CShip:
                 dir_to_use = self.direction_dict[i]
             else:
                 dir_to_use = act_dir
-            act_position = add_positions(act_position, mul_position(dir_to_use, v))
+            act_position = dir_to_use * v + act_position
         return act_position
 
     @property
     def route_end_position2(self) -> tuple[int, int]:
         act_position = self.starting_position
-        act_wp = Position2D(10, 1)
+        act_wp = CVector2D(10, 1)
         for i, v in self.instruction_list:
             if i == 'F':
-                act_position = add_positions(act_position, mul_position(act_wp, v))
+                act_position = act_wp * v + act_position
             elif i in 'ESWN':
-                act_wp = add_positions(act_wp, mul_position(self.direction_dict[i], v))
+                act_wp = self.direction_dict[i] * v + act_wp
             elif i in 'RL':
                 if (self.turn_dict[i] * v // 90) % 4 == 1:
-                    act_wp = Position2D(act_wp.y, -act_wp.x)
+                    act_wp = CVector2D(act_wp.y, -act_wp.x)
                 elif (self.turn_dict[i] * v // 90) % 4 == 2:
-                    act_wp = Position2D(-act_wp.x, -act_wp.y)
+                    act_wp = act_wp * -1
                 elif (self.turn_dict[i] * v // 90) % 4 == 3:
-                    act_wp = Position2D(-act_wp.y, act_wp.x)
+                    act_wp = CVector2D(-act_wp.y, act_wp.x)
         return act_position
 
     @property
     def mh_distance_route1(self) -> int:
-        return mh_distance(self.starting_position, self.route_end_position)
+        return int(self.starting_position - self.route_end_position)
 
     @property
     def mh_distance_route2(self) -> int:
-        return mh_distance(self.starting_position, self.route_end_position2)
+        return int(self.starting_position - self.route_end_position2)
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):

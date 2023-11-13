@@ -1,9 +1,7 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from itertools import product
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
-    answer1 = answer2 = None
     jolt_list = []
     for act_jolt in yield_input_data(p_input_file_path, p_whole_row=True):
         jolt_list.append(act_jolt)

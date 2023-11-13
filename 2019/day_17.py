@@ -1,12 +1,13 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from Intcode import CIntCode
-from GENERICS.aoc_grid import CGridBase, Position2D, neighbor_positions
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import CVector2D, neighbor_positions
 
 
 class CGrid(CGridBase):
     def __init__(self, p_robot_intcode: CIntCode):
         super().__init__()
-        self.robot_position: Position2D | None = None
+        self.robot_position: CVector2D | None = None
         self.robot_program = p_robot_intcode
 
     def build_grid_from_output(self):

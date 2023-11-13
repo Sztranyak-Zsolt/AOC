@@ -1,6 +1,6 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_tree import CTreeNode, CTreeHandler
+from GENERICS.aoc_tree import CTreeHandler
 from collections import defaultdict
 
 

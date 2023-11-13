@@ -49,10 +49,10 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
 
     # after the half of the list the next phase element is the sum of previous phase self + following elements
     from_element_index = sum([x * 10 ** (6 - c) for c, x in enumerate(starting_num_list[:7])])
-    from_element_period = from_element_index // len(num_list)
+    from_element_period = from_element_index // len(starting_num_list)
     remaining_period_count = string_repeat - from_element_period
     num_list = starting_num_list * remaining_period_count
-    new_period_start = from_element_index % len(num_list)
+    new_period_start = from_element_index % len(starting_num_list)
 
     for _ in range(100):
         new_num_list = [sum(num_list) % 10]

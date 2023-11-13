@@ -1,6 +1,7 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, Position2D
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import CVector2D
 
 
 class CGrid(CGridBase):
@@ -8,22 +9,22 @@ class CGrid(CGridBase):
         super().__init__()
 
     @property
-    def starting_position(self) -> tuple[int, int]:
+    def starting_position(self) -> CVector2D:
         return [sp for sp in self.position_dict if sp.y == self.max_y][0]
 
     @property
     def route_information(self) -> tuple[str, int]:
-        poss_dirs = {Position2D(1, 0): [Position2D(1, 0), Position2D(0, 1), Position2D(0, -1)],
-                     Position2D(-1, 0): [Position2D(-1, 0), Position2D(0, 1), Position2D(0, -1)],
-                     Position2D(0, 1): [Position2D(0, 1), Position2D(1, 0), Position2D(-1, 0)],
-                     Position2D(0, -1): [Position2D(0, -1), Position2D(1, 0), Position2D(-1, 0)]}
+        poss_dirs = {CVector2D(1, 0): [CVector2D(1, 0), CVector2D(0, 1), CVector2D(0, -1)],
+                     CVector2D(-1, 0): [CVector2D(-1, 0), CVector2D(0, 1), CVector2D(0, -1)],
+                     CVector2D(0, 1): [CVector2D(0, 1), CVector2D(1, 0), CVector2D(-1, 0)],
+                     CVector2D(0, -1): [CVector2D(0, -1), CVector2D(1, 0), CVector2D(-1, 0)]}
         rv = ''
         step_counter = 1
-        act_direction = Position2D(-1, 0)
+        act_direction = CVector2D(-1, 0)
         act_position = self.starting_position
         while True:
             for next_dir in poss_dirs[act_direction]:
-                if (next_position := add_positions(act_position, next_dir)) in self.position_dict:
+                if (next_position := act_position + next_dir) in self.position_dict:
                     if self.position_dict[next_position] in 'ABDEFGHIJKLMNOPQRSTUVWXYZ':
                         rv += self.position_dict[next_position]
                     act_position = next_position
@@ -37,7 +38,7 @@ class CGrid(CGridBase):
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     g = CGrid()
     for inp_row in yield_input_data(p_input_file_path, p_whole_row=True, p_reversed=True):
-        g.add_row(inp_row, p_chars_to_skip=' ', p_item_type=str)
+        g.add_row(inp_row, p_chars_to_skip=' ', p_item_type=str, p_position_type=CVector2D)
 
     answer1, answer2 = g.route_information
 

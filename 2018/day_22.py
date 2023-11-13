@@ -75,7 +75,7 @@ class CGridX(CGridBase):
         timer_dict = defaultdict(lambda: [])
         timer_dict[0] = [[self.starting_position, 'T']]
         visited_dict = defaultdict(lambda: 9999999)
-        visited_dict[(self.starting_position.x, self.starting_position.y, 'T')] = 0
+        visited_dict[(self.starting_position, 'T')] = 0
         act_timer = 0
         while True:
             if act_timer in timer_dict:
@@ -91,9 +91,10 @@ class CGridX(CGridBase):
                             new_timer += 7
                             new_equipment = list(self.equipment_dict[self.get_region_type(neighbor_pos)]
                                                  & self.equipment_dict[self.get_region_type(d_act_pos)])[0]
-                        if (neighbor_pos.x, neighbor_pos.y, new_equipment) not in visited_dict or visited_dict[(neighbor_pos.x, neighbor_pos.y, new_equipment)] > new_timer:
+                        if (neighbor_pos, new_equipment) not in visited_dict or \
+                                visited_dict[(neighbor_pos, new_equipment)] > new_timer:
                             timer_dict[new_timer].append([neighbor_pos, new_equipment])
-                            visited_dict[(neighbor_pos.x, neighbor_pos.y, new_equipment)] = new_timer
+                            visited_dict[(neighbor_pos, new_equipment)] = new_timer
             act_timer += 1
 
 

@@ -1,14 +1,15 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from Intcode import CIntCode
-from GENERICS.aoc_grid import CGridBase, Position2D, add_positions
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import CVector2D
 
 
 class CGridRobot(CGridBase):
-    dir_dict = {0: Position2D(0, 1), 1: Position2D(1, 0), 2: Position2D(0, -1), 3: Position2D(-1, 0)}
+    dir_dict = {0: CVector2D(0, 1), 1: CVector2D(1, 0), 2: CVector2D(0, -1), 3: CVector2D(-1, 0)}
 
     def __init__(self):
         super().__init__()
-        self.robot_position = Position2D(0, 0)
+        self.robot_position = CVector2D(0, 0)
         self.robot_facing = 0
 
     def robot_paint(self,  p_color: bool):
@@ -23,7 +24,7 @@ class CGridRobot(CGridBase):
             self.robot_facing = (self.robot_facing + 1) % 4
         else:
             self.robot_facing = (self.robot_facing - 1) % 4
-        self.robot_position = add_positions(self.robot_position, self.dir_dict[self.robot_facing])
+        self.robot_position = self.robot_position + self.dir_dict[self.robot_facing]
 
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):

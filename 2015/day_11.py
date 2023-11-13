@@ -51,7 +51,9 @@ def is_valid_word(p_word: str) -> bool:
         else:
             prev_letter = act_letter
         if act_chain + act_letter in word_chain3():
-            has_inc3_letter = True
+            w = act_chain + act_letter
+            if list(w) == sorted(list(w)):
+                has_inc3_letter = True
         act_chain = act_chain[1:] + act_letter
     return has_inc3_letter and double_counter >= 2
 

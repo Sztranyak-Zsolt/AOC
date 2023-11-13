@@ -1,11 +1,11 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, CBaseItem, neighbor_positions, Position2D
+from GENERICS.aoc_grid import CGridBase, neighbor_positions, Position2D
 from collections import deque
 
 
-class CNode(CBaseItem):
+class CNode:
     def __init__(self, p_value: str, p_size: int, p_used: int, p_avail: int, p_used_perc: int):
-        super().__init__(p_value)
+        self.value = p_value
         self.size = p_size
         self.used = p_used
         self.avail = p_avail

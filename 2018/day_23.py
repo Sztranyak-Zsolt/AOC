@@ -1,7 +1,7 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import mh_distance, add_positions, mul_position
-from GENERICS.aoc_space import Position3D, CPlane
+from GENERICS.aoc_vector import mh_distance, add_positions, mul_position, Position3D
+from GENERICS.aoc_space import CPlane
 from functools import cached_property
 from heapq import heapify, heappop, heappush
 

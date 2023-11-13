@@ -1,25 +1,27 @@
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from GENERICS.aoc_grid import CGridBase, add_positions, DIRS, Position2D
+from GENERICS.aoc_grid import CGridBase
+from GENERICS.aoc_vector import CVector2D
 
 
 class CGrid(CGridBase):
-    directions = {"v": DIRS.DOWN,
-                  "^": DIRS.UP,
-                  ">": DIRS.RIGHT,
-                  "<": DIRS.LEFT}
+    directions = {"v": CVector2D(0, -1),
+                  "^": CVector2D(0, 1),
+                  ">": CVector2D(1, 0),
+                  "<": CVector2D(-1, 0)}
 
     def __init__(self):
         super().__init__()
-        self.santa_position = Position2D(0, 0)
-        self.robot_position = Position2D(0, 0)
-        self.present_set = {Position2D(0, 0)}
+        self.santa_position = CVector2D(0, 0)
+        self.robot_position = CVector2D(0, 0)
+        self.present_set = {CVector2D(0, 0)}
+        self.santa_position_set = set()
 
     def move_santa(self, p_direction: str):
-        self.santa_position = add_positions(self.santa_position, self.directions[p_direction].value)
+        self.santa_position = self.santa_position + self.directions[p_direction]
         self.present_set.add(self.santa_position)
 
     def move_robot(self, p_direction: str):
-        self.robot_position = add_positions(self.robot_position, self.directions[p_direction].value)
+        self.robot_position = self.robot_position + self.directions[p_direction]
         self.present_set.add(self.robot_position)
 
     def count_house_with_present(self) -> int:

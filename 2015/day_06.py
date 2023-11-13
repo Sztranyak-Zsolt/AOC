@@ -7,19 +7,19 @@ class CGrid(CGridBase):
         super().__init__()
         self.advanced_grid = p_advanced_grid
 
-    def switch_on(self, p_position):
+    def switch_on(self, p_position: Position2D):
         if not self.advanced_grid:
             self.position_dict[p_position] = 1
             return
         self.position_dict[p_position] = self.position_dict.get(p_position, 0) + 1
 
-    def switch_off(self, p_position):
+    def switch_off(self, p_position: Position2D):
         if not self.advanced_grid:
             self.position_dict[p_position] = 0
             return
         self.position_dict[p_position] = max(0, self.position_dict.get(p_position, 0) - 1)
 
-    def switch_toggle(self, p_position):
+    def switch_toggle(self, p_position: Position2D):
         if not self.advanced_grid:
             self.position_dict[p_position] = 1 - self.position_dict.get(p_position, 0)
             return
@@ -31,7 +31,7 @@ class CGrid(CGridBase):
                         "toggle": self.switch_toggle}[p_change_type]
         for d_x in range(min(p_position1.x, p_position2.x), max(p_position1.x, p_position2.x) + 1):
             for d_y in range(min(p_position1.y, p_position2.y), max(p_position1.y, p_position2.y) + 1):
-                act_function((d_x, d_y))
+                act_function(Position2D(d_x, d_y))
 
     @property
     def brightness(self):

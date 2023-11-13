@@ -38,6 +38,14 @@ def try_to_int(p_str: str) -> int | str:
         return p_str
 
 
+def sign(p_num: int | float) -> int:
+    if p_num > 0:
+        return 1
+    elif p_num == 0:
+        return 0
+    return -1
+
+
 def yield_input_data(p_file_name: str,
                      p_whole_row: bool = False,
                      p_only_nums: bool = False,

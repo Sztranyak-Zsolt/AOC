@@ -77,7 +77,6 @@ class CScramble:
         else:
             sl = slice(None, None, None)
         for act_instruction in self.instruction_list[sl]:
-            print(act_instruction)
             act_instruction[0](act_string, *act_instruction[1])
         return ''.join(act_string)
 
