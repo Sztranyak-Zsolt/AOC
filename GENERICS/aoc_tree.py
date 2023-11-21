@@ -54,10 +54,16 @@ class CTreeNode:
             yield act_parent
             act_parent = act_parent.parent_item
 
+    def yield_all_item(self):
+        for ln in self.child_list:
+            for lni in ln.yield_all_item():
+                yield lni
+        yield self
 
 class CTreeHandler:
     def __init__(self):
         self.node_dict: dict[str, CTreeNode] = {}
+        self.act_item: CTreeNode | None = None
 
     def get_tree_node(self, p_node_id: str) -> CTreeNode:
         if p_node_id not in self.node_dict:

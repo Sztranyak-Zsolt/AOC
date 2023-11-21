@@ -37,7 +37,7 @@ class CGridBase:
             self.min_y = self.max_y = p_position.y
 
     def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
-                p_item_type: type[str] | type[int] = str, p_position_type: type[TP2D] = Position2D):
+                p_item_type: type[str] | type[int] | object = str, p_position_type: type[TP2D] = Position2D):
         if p_row_number is None:
             if len(self.position_dict) == 0:
                 p_row_number = 0

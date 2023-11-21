@@ -5,7 +5,6 @@ from itertools import zip_longest, product, permutations
 from collections import namedtuple
 from functools import cached_property, cache
 from collections import deque
-from copy import copy
 
 
 Position2D = namedtuple('Position2D', ['x', 'y'])

@@ -116,8 +116,8 @@ class CSpaceBase:
         if len(self.position_dict) != 1 or not set_border_on_init:
             self.min_vector = CVector3D(min(self.min_x, p_position.x), min(self.min_y, p_position.y),
                                         min(self.min_z, p_position.z))
-            self.max_vector = CVector3D(min(self.max_x, p_position.x), min(self.max_y, p_position.y),
-                                        min(self.max_z, p_position.z))
+            self.max_vector = CVector3D(max(self.max_x, p_position.x), max(self.max_y, p_position.y),
+                                        max(self.max_z, p_position.z))
         else:
             self.min_vector = CVector3D(p_position.x, p_position.y, p_position.z)
             self.max_vector = CVector3D(p_position.x, p_position.y, p_position.z)
