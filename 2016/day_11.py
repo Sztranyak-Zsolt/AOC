@@ -20,7 +20,13 @@ class CFloors:
 
     @cached_property
     def state_code(self) -> str:
-        return str(self.elevator_floor) + '|' + '|'.join([f'{k}:{v}' for k, v in self.items.items()])
+        rl = []
+        for act_item, act_floor in self.items.items():
+            if act_item[-1] == 'M':
+                continue
+            rl.append(str(act_floor) + 'x' + str(self.items[act_item[:2] + 'M']))
+        return str(self.elevator_floor) + '|' + '|'.join(sorted(rl))
+        # return str(self.elevator_floor) + '|' + '|'.join([f'{k}:{v}' for k, v in self.items.items()])
 
     @property
     def invalid_state(self) -> bool:
