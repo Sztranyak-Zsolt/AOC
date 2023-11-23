@@ -2,7 +2,7 @@ from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 
 
 class CSnafu:
-    def __init__(self, p_value: str):
+    def __init__(self, p_value: str = '0'):
         self.value = p_value
 
     @property
@@ -37,7 +37,7 @@ class CSnafu:
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
 
     answer2 = None
-    act_num = CSnafu('0')
+    act_num = CSnafu()
     for inp_row in yield_input_data(p_input_file_path, p_whole_row=True, p_convert_to_num=False):
         act_num += CSnafu(inp_row)
     answer1 = act_num.value
