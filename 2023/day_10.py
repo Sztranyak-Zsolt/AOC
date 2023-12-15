@@ -26,6 +26,19 @@ class CGrid(CGridBase):
             return Position2D(0, 0)
 
     @cached_property
+    def starting_fence(self) -> str:
+        fence_mapping = {'1100': 'F', '1010': '-', '1001': 'L', '0110': '7', '0101': '|', '0011': 'J'}
+        map_str = ''
+        for neighbor_pos in [Position2D(1, 0), Position2D(0, -1), Position2D(-1, 0), Position2D(0, 1)]:
+            act_neighbor = add_positions(self.starting_position, neighbor_pos)
+            if Position2D(-neighbor_pos.x, -neighbor_pos.y) in \
+                    neighbor_fence_positions(Position2D(0, 0), self.position_dict[act_neighbor]):
+                map_str += '1'
+            else:
+                map_str += '0'
+        return fence_mapping[map_str]
+
+    @cached_property
     def fence_pos_dict(self) -> dict[Position2D, int]:
         rd = {self.starting_position: 0}
         dq = deque([(self.starting_position, 0)])
@@ -44,21 +57,22 @@ class CGrid(CGridBase):
     def internal_area_count(self) -> int:
         rv = 0
         for act_y in range(self.min_y, self.max_y + 1):
-            f_count = 0
-            prev_f = ''
+            inner_area = False
+            prev_fence = ''
             for act_x in range(self.min_x, self.max_x + 1):
                 if (act_pos := Position2D(act_x, act_y)) not in self.fence_pos_dict:
-                    if f_count % 2 == 1:
+                    if inner_area:
                         rv += 1
                     continue
-                if (act_fence := self.position_dict[act_pos]) == '-':
+                act_fence = self.position_dict[act_pos] if act_pos != self.starting_position else self.starting_fence
+                if act_fence == '-':
                     continue
-                if act_fence in ['S', '|'] or (prev_f, act_fence) in [('F', 'J'), ('L', '7')]:
-                    f_count += 1
-                    prev_f = ''
+                if act_fence == '|' or (prev_fence, act_fence) in [('F', 'J'), ('L', '7')]:
+                    inner_area = not inner_area
+                    prev_fence = ''
                     continue
                 if act_fence in ['F', 'L']:
-                    prev_f = act_fence
+                    prev_fence = act_fence
         return rv
 
 

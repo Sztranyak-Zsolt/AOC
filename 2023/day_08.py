@@ -13,7 +13,8 @@ def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
         if orig_node[-1] == 'A':
             act_nodes.append([orig_node, orig_node])
 
-    # as starting nodes next directions are equals end nodes next directions, movements are periodic
+    # as starting nodes next directions are equals end nodes next directions
+    # and length of cycle + 1 modulo instruction length = 0, movements are periodic
     c = 0
     while act_nodes:
         next_int = step_directions[c % len(step_directions)]
