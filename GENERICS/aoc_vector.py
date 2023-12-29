@@ -5,6 +5,7 @@ from itertools import zip_longest, product, permutations
 from collections import namedtuple
 from functools import cached_property, cache
 from collections import deque
+from fractions import Fraction
 
 
 Position2D = namedtuple('Position2D', ['x', 'y'])
@@ -40,8 +41,8 @@ def orientation_list(p_num: int):
 
 
 class CVectorBase:
-    def __init__(self, *p_positions: int):
-        self.position_tuple: tuple[int] = tuple(p_positions)
+    def __init__(self, *p_positions: int | Fraction):
+        self.position_list: list[int | Fraction] = list(p_positions)
 
     def __iter__(self):
         self.index = 0
@@ -53,17 +54,17 @@ class CVectorBase:
 
     def __next__(self):
         try:
-            rv = self.position_tuple[self.index]
+            rv = self.position_list[self.index]
             self.index += 1 if self.index >= 0 else -1
             return rv
         except IndexError:
             raise StopIteration
 
     def __bool__(self):
-        return any(self.position_tuple)
+        return any(self.position_list)
 
     def __int__(self) -> int:
-        return sum([abs(p) for p in self.position_tuple])
+        return sum(abs(p) for p in self.position_list)
 
     def __add__(self, other: Iterable[int]) -> Self:
         return self.__class__(*[sp + op for sp, op in zip_longest(self, other[:len(self)], fillvalue=0)])
@@ -71,13 +72,13 @@ class CVectorBase:
     def __sub__(self, other: Iterable[int]) -> Self:
         return self.__class__(*[sp - op for sp, op in zip_longest(self, other[:len(self)], fillvalue=0)])
 
-    def __mul__(self, p_multiplier: int) -> Self:
+    def __mul__(self, p_multiplier: int | Fraction) -> Self:
         return self.__class__(*[v * p_multiplier for v in self])
 
-    def __floordiv__(self, p_divisor: int) -> Self:
+    def __floordiv__(self, p_divisor: int | Fraction) -> Self:
         return self.__class__(*[v // p_divisor for v in self])
 
-    def __mod__(self, p_divisor: int) -> Self:
+    def __mod__(self, p_divisor: int | Fraction) -> Self:
         return self.__class__(*[v - v // p_divisor for v in self])
 
     def __abs__(self):
@@ -91,24 +92,27 @@ class CVectorBase:
         return self
 
     def __copy__(self):
-        return self.__class__(*self.position_tuple)
+        return self.__class__(*self.position_list)
 
     def __str__(self):
-        return f'{self.__class__.__name__}{self.position_tuple}'
+        return f'{self.__class__.__name__}{self.position_list}'
 
     def __len__(self):
-        return len(self.position_tuple)
+        return len(self.position_list)
 
-    def __getitem__(self, i):
-        return self.position_tuple[i]
+    def __getitem__(self, i: int):
+        return self.position_list[i]
+
+    def __setitem__(self, i: int, v: int | Fraction):
+        self.position_list[i] = v
 
     def __hash__(self):
-        return hash(self.position_tuple)
+        return hash(tuple(self.position_list))
 
     def __eq__(self, other):
         if isinstance(other, tuple):
-            return self.position_tuple == other
-        return self.position_tuple == other.position_tuple
+            return tuple(self.position_list) == other
+        return self.position_list == other.position_list
 
     @cached_property
     def rotations_dict(self) -> dict[tuple[int, ...], Self]:
@@ -118,60 +122,60 @@ class CVectorBase:
                 rl = []
                 orientation = []
                 for act_index in used_indexes:
-                    rl.append(pos_sign[act_index] * self.position_tuple[act_index])
+                    rl.append(pos_sign[act_index] * self.position_list[act_index])
                     orientation.append(pos_sign[act_index] * (act_index + 1))
                 rd[tuple(orientation)] = self.__class__(*rl)
         return rd
 
 
 class CVector2D(CVectorBase):
-    def __init__(self, p_x: int, p_y: int):
+    def __init__(self, p_x: int | Fraction, p_y: int | Fraction):
         super().__init__(p_x, p_y)
 
     @property
-    def x(self):
-        return self.position_tuple[0]
+    def x(self) -> int | Fraction:
+        return self.position_list[0]
 
     @x.setter
-    def x(self, p_x: int):
-        self.position_tuple = (p_x, self.position_tuple[1])
+    def x(self, p_x: int | Fraction):
+        self.position_list[0] = p_x
 
     @property
-    def y(self):
-        return self.position_tuple[1]
+    def y(self) -> int | Fraction:
+        return self.position_list[1]
 
     @y.setter
-    def y(self, p_y: int):
-        self.position_tuple = (self.position_tuple[0], p_y)
+    def y(self, p_y: int | Fraction):
+        self.position_list[1] = p_y
 
 
 class CVector3D(CVectorBase):
-    def __init__(self, p_x: int, p_y: int, p_z: int):
+    def __init__(self, p_x: int | Fraction, p_y: int | Fraction, p_z: int | Fraction):
         super().__init__(p_x, p_y, p_z)
 
     @property
-    def x(self):
-        return self.position_tuple[0]
+    def x(self) -> int | Fraction:
+        return self.position_list[0]
 
     @x.setter
-    def x(self, p_x: int):
-        self.position_tuple = (p_x, self.position_tuple[1], self.position_tuple[2])
+    def x(self, p_x: int | Fraction):
+        self.position_list[0] = p_x
 
     @property
-    def y(self):
-        return self.position_tuple[1]
+    def y(self) -> int | Fraction:
+        return self.position_list[1]
 
     @y.setter
-    def y(self, p_y: int):
-        self.position_tuple = (self.position_tuple[0], p_y, self.position_tuple[2])
+    def y(self, p_y: int | Fraction):
+        self.position_list[1] = p_y
 
     @property
-    def z(self):
-        return self.position_tuple[2]
+    def z(self) -> int | Fraction:
+        return self.position_list[2]
 
     @z.setter
-    def z(self, p_z: int):
-        self.position_tuple = (self.position_tuple[0], self.position_tuple[1], p_z)
+    def z(self, p_z: int | Fraction):
+        self.position_list[2] = p_z
 
 
 TP2D = TypeVar('TP2D', bound=tuple[int, int] | Position2D | CVector2D)
@@ -225,7 +229,7 @@ def add_positions(*args: tuple[int, ...] | Position2D | Position3D):
     return tuple(r_l)
 
 
-def mul_position(p_position: tuple[int, ...] | Position2D | Position3D, p_multiplier: int) \
+def mul_position(p_position: tuple[int, ...] | Position2D | Position3D, p_multiplier: int | Fraction) \
         -> tuple[int, ...] | Position2D | Position3D:
     """
     Function multiply a position with an integer.

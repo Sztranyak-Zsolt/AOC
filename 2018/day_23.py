@@ -1,7 +1,7 @@
 from __future__ import annotations
 from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_vector import mh_distance, add_positions, mul_position, Position3D
-from GENERICS.aoc_space import CPlane
+from GENERICS.aoc_space import CPlane, plane_from_three_points
 from functools import cached_property
 from heapq import heapify, heappop, heappush
 
@@ -79,11 +79,10 @@ class CNanobot:
         for x in [-1, 1]:
             for y in [-1, 1]:
                 for z in [-1, 1]:
-                    new_side_plane = CPlane()
-                    new_side_plane.get_plane_from_3_points(add_positions(self.center, Position3D(x * self.range, 0, 0)),
-                                                           add_positions(self.center, Position3D(0, y * self.range, 0)),
-                                                           add_positions(self.center, Position3D(0, 0, z * self.range)))
-                    rd.side_dict[Position3D(x, y, z)] = new_side_plane
+                    new_side_pl = plane_from_three_points(add_positions(self.center, Position3D(x * self.range, 0, 0)),
+                                                          add_positions(self.center, Position3D(0, y * self.range, 0)),
+                                                          add_positions(self.center, Position3D(0, 0, z * self.range)))
+                    rd.side_dict[Position3D(x, y, z)] = new_side_pl
         return rd
 
 
