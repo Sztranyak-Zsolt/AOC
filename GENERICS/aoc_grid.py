@@ -39,7 +39,7 @@ class CGridBase:
     def add_row(self, p_row: str, p_row_number: int | None = None, p_chars_to_skip: str = '',
                 p_item_type: type[str] | type[int] | object = str, p_position_type: type[TP2D] = Position2D):
         if p_row_number is None:
-            if len(self.position_dict) == 0:
+            if len(self.position_dict) == 0 and self.min_x == self.max_x:
                 p_row_number = 0
             else:
                 p_row_number = self.max_y + 1
@@ -249,6 +249,9 @@ class CGridBase:
             else:
                 rv += 1
         return rv
+
+    def is_position_on_grid(self, p_position: Position2D) -> bool:
+        return self.min_x <= p_position.x <= self.max_x and self.min_y <= p_position.y <= self.max_y
 
     def __str__(self):
         ret_lst = list()
