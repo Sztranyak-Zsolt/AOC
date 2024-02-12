@@ -3,20 +3,15 @@ from functools import cache
 
 
 @cache
-def calc_ways(p_spring: str, p_scan: tuple[int], p_fold_num: int = 1):
-    if len(p_scan) == 0:
+def calc_ways(p_spring: str, p_scan: tuple[int]):
+    if not p_scan:
         return 0 if p_spring.count('#') else 1
-    if p_fold_num != 1:
-        p_spring = (p_spring + '?') * (p_fold_num - 1) + p_spring
-        p_scan = p_scan * p_fold_num
-    if p_spring and p_spring[-1] != '.':
-        p_spring += '.'
+    elif p_spring.count('.') == len(p_spring):
+        return 0
     rv = 0
     act_scan = p_scan[0]
-    for i in range(len(p_spring)):
-        if i != 0 and p_spring[i-1] == '#':
-            continue
-        if p_spring[i:i+act_scan].count('.') == 0 and p_spring[i+act_scan] != '#':
+    for i in range(len(p_spring) - sum(p_scan) - len(p_scan) + 2):
+        if p_spring[i:i+act_scan].count('.') == 0 and (p_spring + '.')[i+act_scan] != '#':
             rv += calc_ways(p_spring[i+act_scan+1:], tuple(p_scan[1:]))
         if p_spring[i] == '#':
             break
@@ -25,9 +20,10 @@ def calc_ways(p_spring: str, p_scan: tuple[int], p_fold_num: int = 1):
 
 def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
     answer1 = answer2 = 0
+    fold_num = 5
     for spring, *scan in yield_input_data(p_input_file_path, p_chars_to_space=','):
         answer1 += calc_ways(spring, tuple(scan))
-        answer2 += calc_ways(spring, tuple(scan), 5)
+        answer2 += calc_ways((spring + '?') * (fold_num - 1) + spring, tuple(scan * 5))
 
     return answer1, answer2
 
