@@ -3,7 +3,7 @@ from functools import cache
 
 
 @cache
-def calc_ways(p_spring: str, p_scan: tuple[int]):
+def calc_ways(p_spring: str, p_scan: tuple[int]) -> int:
     if not p_scan:
         return 0 if p_spring.count('#') else 1
     elif p_spring.count('.') == len(p_spring):
