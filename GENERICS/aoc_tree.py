@@ -1,6 +1,7 @@
 from __future__ import annotations
 from functools import cached_property
 from typing import Self, Iterator
+from collections import deque
 
 
 class CTreeNode:
@@ -59,6 +60,24 @@ class CTreeNode:
             for lni in ln.yield_all_item():
                 yield lni
         yield self
+
+    def yield_children(self):
+        dq = deque(self.child_list)
+        visited = set(self.child_list)
+        while dq:
+            act_child = dq.popleft()
+            yield act_child
+            for next_child in act_child.child_list:
+                if next_child not in visited:
+                    visited.add(next_child)
+                    dq.append(next_child)
+
+    def __hash__(self):
+        return hash((self.name, self.value))
+
+    def __eq__(self, other):
+        return self.name == other.name and self.value == other.value
+
 
 class CTreeHandler:
     def __init__(self):

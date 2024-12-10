@@ -1,15 +1,14 @@
 from __future__ import annotations
-from typing import Self, Iterable, TypeVar
+from typing import Self, Iterable, TypeVar, NamedTuple
 from math import gcd
 from itertools import zip_longest, product, permutations
-from collections import namedtuple
 from functools import cached_property, cache
 from collections import deque
 from fractions import Fraction
 
 
-Position2D = namedtuple('Position2D', ['x', 'y'])
-Position3D = namedtuple('Position3D', ['x', 'y', 'z'])
+Position2D = NamedTuple('Position2D', [('x', int), ('y', int)])
+Position3D = NamedTuple('Position3D', [('x', int), ('y', int), ('z', int)])
 
 
 @cache
@@ -97,6 +96,9 @@ class CVectorBase:
     def __str__(self):
         return f'{self.__class__.__name__}{self.position_list}'
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}{self.position_list}'
+
     def __len__(self):
         return len(self.position_list)
 
@@ -113,6 +115,18 @@ class CVectorBase:
         if isinstance(other, tuple):
             return tuple(self.position_list) == other
         return self.position_list == other.position_list
+
+    def __lt__(self, other):
+        for p1, p2 in zip(self, other):
+            if p1 == p2:
+                continue
+            if p1 < p2:
+                return True
+            return False
+        return False
+
+    def __le__(self, other):
+        return self == other or self > other
 
     @cached_property
     def rotations_dict(self) -> dict[tuple[int, ...], Self]:
