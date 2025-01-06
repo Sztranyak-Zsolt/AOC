@@ -3,7 +3,7 @@ from typing import Self
 
 
 class CGraphItem:
-    def __init__(self, p_value: int = 0):
+    def __init__(self, p_value: int | str = 0):
         self.value = p_value
         self.connected_nodes: list[Self] = []
         self.group_head_node = self
