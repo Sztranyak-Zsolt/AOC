@@ -1,8 +1,11 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from copy import copy
 import heapq
-import os
-
 
 class CSpell:
     def __init__(self, p_name: str, p_code: str, p_mana_cost: int,
@@ -127,7 +130,7 @@ class CTurnState:
         return self.mana_spent < other.mana_spent
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = None
     input_iter = iter(yield_input_data(p_input_file_path))
     me = CPlayer("Me", 50, 0, 0, 500)

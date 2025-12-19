@@ -1,5 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
 import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class CItem:
@@ -76,7 +80,7 @@ def player1_win(p_player1: CPlayer, p_player2: CPlayer):
     return turns_needed_to_defeat(p_player1, p_player2) <= turns_needed_to_defeat(p_player2, p_player1)
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = 999999999
     answer2 = 0
     input_iter = iter(yield_input_data(p_input_file_path))

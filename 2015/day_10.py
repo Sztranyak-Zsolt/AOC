@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 def gen_look_and_say(p_word: str) -> str:
@@ -16,7 +21,7 @@ def gen_look_and_say(p_word: str) -> str:
     return new_word
 
 
-def solve_puzzle(p_input_file_path: str) -> (int, int):
+def solve_puzzle(p_input_file_path: str) -> tuple[int, int]:
     answer1 = None
     act_input = next(yield_input_data(p_input_file_path, p_whole_row=True, p_convert_to_num=False), None)
     for i in range(50):

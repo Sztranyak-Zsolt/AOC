@@ -1,9 +1,14 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from typing import Callable
 
 
-def calc_eq(p_item_list: [int]) -> int:
+def calc_eq(p_item_list: list[int]) -> int:
     return p_item_list[0]
 
 
@@ -21,15 +26,15 @@ def calc_or(p_item_list: list[int]) -> int:
     return rv
 
 
-def calc_not(p_item_list: [int]) -> int:
+def calc_not(p_item_list: list[int]) -> int:
     return 65535 - p_item_list[0]
 
 
-def calc_rshift(p_item_list: [int, int]) -> int:
+def calc_rshift(p_item_list: list[int, int]) -> int:
     return (p_item_list[0] >> p_item_list[1]) & 65535
 
 
-def calc_lshift(p_item_list: [int, int]) -> int:
+def calc_lshift(p_item_list: list[int, int]) -> int:
     return (p_item_list[0] << p_item_list[1]) & 65535
 
 
@@ -97,7 +102,7 @@ class CTree:
                 has_new_calculation = True
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     formula_tree = CTree()
     for inp_row in yield_input_data(p_input_file_path, p_chars_to_space='->'):
         formula_tree.add_formula(*inp_row)

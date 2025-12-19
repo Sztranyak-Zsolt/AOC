@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 import json
 
 
@@ -35,7 +40,7 @@ def calc_child_number_sum2(p_input_dict: dict | list) -> int:
     return act_sum
 
 
-def solve_puzzle(p_input_file_path: str) -> (int, int):
+def solve_puzzle(p_input_file_path: str) -> tuple[int, int]:
     input_single_row = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
     input_dict = json.loads(input_single_row)
     answer1 = calc_child_number_sum(input_dict)

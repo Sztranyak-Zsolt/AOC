@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 import hashlib
 
 
@@ -12,7 +17,7 @@ def hash_num_lookup(p_input_string: str, p_hash_start_with: str) -> int:
             return act_number_to_check
 
 
-def solve_puzzle(p_input_file_path: str) -> (int, int):
+def solve_puzzle(p_input_file_path: str) -> tuple[int, int]:
     input_single_row = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
     answer1 = hash_num_lookup(input_single_row, '00000')
     answer2 = hash_num_lookup(input_single_row, '000000')

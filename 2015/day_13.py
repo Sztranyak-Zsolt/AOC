@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from itertools import permutations
 
 
@@ -32,7 +37,7 @@ class CGuestHandler:
         return max_happiness
 
 
-def solve_puzzle(p_input_file_path: str) -> (int, int):
+def solve_puzzle(p_input_file_path: str) -> tuple[int, int]:
     gh = CGuestHandler()
     for from_guest, _, sympathy_direction, sympathy_score, *_, to_guest in \
             yield_input_data(p_input_file_path, p_chars_to_space='.'):

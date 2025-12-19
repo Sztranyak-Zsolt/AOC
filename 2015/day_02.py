@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from collections import namedtuple
 
 
@@ -18,7 +23,7 @@ def calc_ribbon_need(p_package: TPackage) -> int:
         + p_package.length * p_package.width * p_package.height
 
 
-def solve_puzzle(p_input_file_path: str) -> (int, int):
+def solve_puzzle(p_input_file_path: str) -> tuple[int, int]:
 
     paper_need, ribbon_need = 0, 0
     for inp_row_length, inp_row_weight, inp_row_height in yield_input_data(p_input_file_path, p_chars_to_space='x'):
