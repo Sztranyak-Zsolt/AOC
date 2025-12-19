@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 def calc_new_num(p_act_num: str):
@@ -21,7 +26,7 @@ def calc_cm(p_str: str, p_length: int):
     return p_str
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     input_single_row = next(yield_input_data(p_input_file_path, p_whole_row=True, p_convert_to_num=False), None)
 
     answer1 = calc_cm(input_single_row, 272)

@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class SignalError(Exception):
@@ -32,7 +37,7 @@ class CCalculation:
         self.vars[p_param1] += 1
         return 1
 
-    def out(self, p_param1: str | int) -> (int, bool):
+    def out(self, p_param1: str | int) -> tuple[int, bool]:
         if isinstance(p_param1, int):
             next_signal = p_param1
         else:
@@ -128,7 +133,7 @@ class CCalculation:
                 return False
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer2 = None
     c = CCalculation()
     for inp_row in yield_input_data(p_input_file_path):

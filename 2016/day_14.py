@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from hashlib import md5
 from re import search, findall
 from functools import lru_cache
@@ -23,7 +28,7 @@ def check_num(p_input_string: str, p_num: int, p_stretch: bool = False) -> bool:
     return False
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = -1
     input_str = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
 

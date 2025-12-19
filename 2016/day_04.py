@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from re import fullmatch
 from string import ascii_lowercase
 
@@ -33,7 +38,7 @@ class CRoomCode:
         return ''.join(a[:5])
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = 0
     for room_raw_code in yield_input_data(p_input_file_path, p_whole_row=True):
         room_match = fullmatch(r"([a-z\-]+)-([0-9]+)\[([a-z]{5})]", room_raw_code)

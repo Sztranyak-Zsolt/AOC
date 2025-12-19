@@ -1,5 +1,10 @@
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
 import hashlib
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class CCodeGenerator:
@@ -39,7 +44,7 @@ class CCodeGenerator:
                     break
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     door = CCodeGenerator(next(yield_input_data(p_input_file_path, p_whole_row=True), None))
     answer1 = door.code1
     answer2 = door.code2
