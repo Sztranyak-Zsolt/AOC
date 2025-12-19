@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections import deque
 from typing import Self, Iterable
-from GENERICS.aoc_vector import neighbor_positions, TP2D, Position2D
+from .aoc_vector import neighbor_positions, TP2D, Position2D
 from functools import cache
 
 

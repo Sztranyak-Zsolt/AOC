@@ -1,7 +1,7 @@
 from __future__ import annotations
 from math import gcd
 from typing import Self
-from GENERICS.aoc_vector import CVector3D, Position3D, TP3D
+from .aoc_vector import CVector3D, Position3D, TP3D
 from copy import copy
 from fractions import Fraction
 
