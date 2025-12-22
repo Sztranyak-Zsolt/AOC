@@ -96,8 +96,9 @@ def grid_from_input(p_file_name: str,
                     p_convert_to_num: bool = True,
                     p_chars_to_space: str = '',
                     p_chars_to_skip: str = '',
-                    p_item_type: type[str] | type[int] = str):
-    r_grid = CGridBase()
+                    p_item_type: type[str] | type[int] = str,
+                    p_grid_class: type[CGridBase] = CGridBase):
+    r_grid = p_grid_class()
     for inp_row in yield_input_data(p_file_name, p_whole_row=True, p_only_nums=p_only_nums,
                                     p_convert_to_num=p_convert_to_num, p_chars_to_space=p_chars_to_space):
         r_grid.add_row(inp_row, p_chars_to_skip=p_chars_to_skip, p_item_type=p_item_type)
