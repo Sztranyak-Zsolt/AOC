@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class CCombatDecks:
@@ -25,7 +30,7 @@ class CCombatDecks:
             return deck_1
         return deck_2
 
-    def recursive_combat(self, p_deck1: list[int] | None = None, p_deck2: list[int] | None = None) -> (bool, list[int]):
+    def recursive_combat(self, p_deck1: list[int] | None = None, p_deck2: list[int] | None = None) -> tuple[bool, list[int]]:
         if not p_deck1:
             p_deck1 = self.player1_deck.copy()
         if not p_deck2:
@@ -50,7 +55,7 @@ class CCombatDecks:
         return False, p_deck2
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
 
     input_group = iter(yield_input_data(p_input_file_path, p_whole_row=True, p_group_separator='\n\n'))
     cd = CCombatDecks(next(input_group)[1:], next(input_group)[1:])

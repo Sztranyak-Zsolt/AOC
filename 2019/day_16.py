@@ -1,5 +1,10 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 def yield_pattern(p_depth: int, p_pattern_base: list[int] | None = None, p_range: int | None = None):
@@ -34,7 +39,7 @@ def get_last_digit(p_num: int) -> int:
         return 9 - (p_num - 1) % 10
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
 
     input_single_row = next(yield_input_data(p_input_file_path, p_whole_row=True, p_convert_to_num=False), None)
     starting_num_list = [int(x) for x in input_single_row]

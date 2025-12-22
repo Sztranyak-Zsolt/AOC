@@ -1,7 +1,12 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
-from copy import copy
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
 
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
+from copy import copy
+from typing import Generator
 
 class CBurrowSystem:
     def __init__(self):
@@ -38,7 +43,7 @@ class CBurrowSystem:
                 return True
         return False
 
-    def yield_next_state_form_tunnel(self) -> tuple[CBurrowSystem, int]:
+    def yield_next_state_form_tunnel(self) -> Generator[tuple[CBurrowSystem, int]]:
         for i, act_tunnel_tile in enumerate(self.tunnel):
             if act_tunnel_tile not in self.burrow or act_tunnel_tile not in self.finished_burrow_list:
                 continue
@@ -53,7 +58,7 @@ class CBurrowSystem:
                          + 1) * self.move_cost[act_tunnel_tile]
             yield new_bs, path_cost
 
-    def yield_next_state_form_burrow(self) -> tuple[CBurrowSystem, int]:
+    def yield_next_state_form_burrow(self) -> Generator[tuple[CBurrowSystem, int]]:
         for act_burrow_code, act_burrow_values in self.burrow.items():
             if act_burrow_code in self.finished_burrow_list:
                 continue
@@ -128,7 +133,7 @@ class CBurrowHandler:
                     act_dict[new_cost].append(nb)
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
 
     bs = CBurrowSystem()
 

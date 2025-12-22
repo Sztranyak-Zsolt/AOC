@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 def calc_key_loop_size(p_public_key: int, p_mod_num: int, p_subject_number: int = 7) -> int:
@@ -18,7 +23,7 @@ def encrypt_key(p_public_key: int, p_mod_num: int, p_loop_size: int) -> int:
     return rv
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     input_iterator = iter(yield_input_data(p_input_file_path, p_whole_row=True))
     card_public_key, door_public_key = next(input_iterator), next(input_iterator)
     mod_num = 20201227

@@ -1,10 +1,15 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from day_10 import CKnotHash
 from GENERICS.aoc_grid import CGridBase
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
 
     inp_row = next(yield_input_data(p_input_file_path, p_whole_row=True), None)
 

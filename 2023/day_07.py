@@ -1,7 +1,12 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     hands = []
     hands2 = []
     card_strength_dict = {str(s): s for s in range(2, 10)} | {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}

@@ -1,5 +1,10 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class CDeckCard:
@@ -18,7 +23,7 @@ class CDeckCard:
         self.position = (self.position * p_incr_num) % self.deck_length
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
 
     d = CDeckCard(2019, 10007)
     for inp_row in yield_input_data(p_input_file_path):

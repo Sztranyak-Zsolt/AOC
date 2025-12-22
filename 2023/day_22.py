@@ -1,5 +1,10 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_vector import CVector3D, min_vector, max_vector
 from GENERICS.aoc_space import CSpaceBase
 from functools import cached_property
@@ -98,7 +103,7 @@ class CSpace(CSpaceBase):
         return len(cubes_to_be_dis), rv
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     s = CSpace()
     for x1, y1, z1, x2, y2, z2 in yield_input_data(p_input_file_path, p_chars_to_space=',~'):
         s.cube_list.append(CCube(CVector3D(x1, y1, z1), CVector3D(x2, y2, z2)))

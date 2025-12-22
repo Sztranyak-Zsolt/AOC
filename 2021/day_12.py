@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 
 
 class CCave:
@@ -41,7 +46,7 @@ class CCaveSystem:
         return self.cave_routes([self.cave_dict["start"]], True)
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     cs = CCaveSystem()
     for cave1, cave2 in yield_input_data(p_input_file_path, p_chars_to_space='-'):
         cs.add_cave_connections(cave1, cave2)

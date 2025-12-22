@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_vector import CVector2D
 from functools import cached_property, cache
 
@@ -118,7 +123,7 @@ class CSensorHandler:
         return None
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     sh = CSensorHandler()
     for sx, sy, bx, by in yield_input_data(p_input_file_path, p_chars_to_space=',:=', p_only_nums=True):
         sh.sensor_list.append(CSensor(CVector2D(sx, sy), CVector2D(bx, by)))

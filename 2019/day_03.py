@@ -1,5 +1,10 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_vector import CVector2D
 
 
@@ -28,7 +33,7 @@ def wire_crosses(p_wire1: CWire, p_wire2: CWire) -> dict[CVector2D, int]:
     return rd
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     wire1 = CWire()
     wire2 = CWire()
     for i, inp_row in enumerate(yield_input_data(p_input_file_path, p_chars_to_space=',')):

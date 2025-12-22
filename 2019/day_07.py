@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from itertools import permutations
 from Intcode import CIntCode, InputError
 
@@ -56,7 +61,7 @@ class CAmplifierController:
         return rv
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     num_list = next(yield_input_data(p_input_file_path, p_chars_to_space=','), None)
 
     ac = CAmplifierController()

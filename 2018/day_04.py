@@ -1,5 +1,10 @@
 from __future__ import annotations
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from datetime import datetime, timedelta
 from collections import Counter
 
@@ -69,7 +74,7 @@ class CGuardHandler:
         return self.guard_dict[p_guard_id]
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = None
     act_guard: CGuard | None = None
     gh = CGuardHandler()

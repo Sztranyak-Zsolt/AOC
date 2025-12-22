@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from functools import cache
 
 
@@ -67,7 +72,7 @@ class CRuleHandler:
         return len(['x' for s in self.str_list if self.rule_dict[p_rule_id].check_rule(s)])
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     rc = CRuleHandler()
     inp_iter = iter(yield_input_data(p_input_file_path, p_group_separator='\n\n', p_chars_to_space=':"'))
     for rule_key, *inp_rules in next(inp_iter):

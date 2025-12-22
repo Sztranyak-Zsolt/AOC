@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from itertools import combinations
 
 
@@ -11,7 +16,7 @@ def check_preamble_sum(p_num: int, p_num_list: list[int]) -> bool:
     return False
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = None
     num_list = []
     for inp_num in yield_input_data(p_input_file_path, p_whole_row=True):

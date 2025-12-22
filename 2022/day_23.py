@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_grid import CGridBase
 from GENERICS.aoc_vector import Position2D, neighbor_positions, add_positions
 
@@ -67,7 +72,7 @@ class CGrid(CGridBase):
         return self.make_steps()
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = None
     g = CGrid()
     for inp_row in yield_input_data(p_input_file_path, p_whole_row=True, p_reversed=True):

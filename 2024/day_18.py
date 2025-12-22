@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from GENERICS.aoc_grid import CGridBase
 from GENERICS.aoc_vector import Position2D, neighbor_positions
 
@@ -46,7 +51,7 @@ def find_first_non_valid_position(p_wall_coordinates: list[Position2D]) -> Posit
     return p_wall_coordinates[act_min_step]
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     coordinates: list[Position2D] = []
     for inp_row in yield_input_data(p_input_file_path, p_chars_to_space=','):
         coordinates.append(Position2D(*inp_row))

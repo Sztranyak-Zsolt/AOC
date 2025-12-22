@@ -1,4 +1,9 @@
-from GENERICS.aoc2 import yield_input_data, aoc_solve_puzzle
+import os
+import sys
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
+
+from GENERICS.aoc_loader import yield_input_data, aoc_solve_puzzle
 from typing import Iterator
 
 
@@ -10,7 +15,7 @@ def generate_number(p_starting_value: int, p_factor: int, p_dividend: int, p_div
             yield act_value
 
 
-def solve_puzzle(p_input_file_path: str) -> (int | str, int | str | None):
+def solve_puzzle(p_input_file_path: str) -> tuple[int | str, int | str | None]:
     answer1 = answer2 = 0
     bit_mask = 2 ** 16 - 1
 
