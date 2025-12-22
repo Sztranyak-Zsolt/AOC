@@ -210,11 +210,11 @@ def max_vector(*p_vectors: CVectorBase):
     return p_vectors[0].__class__(*rv)
 
 
-def neighbor_positions(p_position: tuple[int, ...] | list[int, ...] | CVectorBase | Position2D | Position3D =
+def neighbor_positions(p_position: tuple[int, ...] | list[int] | CVectorBase | Position2D | Position3D =
                        Position2D(0, 0),
                        p_return_near: bool = True,
                        p_return_corner: bool = False,
-                       p_return_self: bool = False) -> Iterable[tuple[int, ...] | list[int, ...] | CVectorBase |
+                       p_return_self: bool = False) -> Iterable[tuple[int, ...] | list[int] | CVectorBase |
                                                                 Position2D | Position3D]:
 
     for act_dif in product((-1, 0, 1), repeat=len(p_position)):
