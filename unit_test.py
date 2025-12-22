@@ -9,9 +9,11 @@ def main():
             check_dict |= eval(sol_row)
 
     missing_answers = []
-    for y in range(2015, 2023):
+    for y in range(2015, 2026):
         path.append(f'{y}')
         for d in range(1, 26):
+            if y == 2025 and d == 13:
+                break
             act_ym = f'{y}{d:02}'
             try:
                 m = __import__(f'{y}.day_{d:02}')
